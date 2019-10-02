@@ -1,0 +1,81 @@
+<input type="hidden" name="page" id="page" value ="{{=it.user.page}}"/>
+<table class="leaders">
+	<thead>
+		<tr>
+			<td style="width:30%;">제목</td>
+			<td style="width:20%;">받는사람</td>
+			<td style="width:20%;">작성날짜</td>
+			<td style="width:10%;">확인</td>
+			<td style="width:10%;">수정</td>
+			<td style="width:10%;">삭제</td>
+
+		</tr>
+	</thead>
+	{{?it.user.results.length > 0}}
+	<tbody>
+		{{~it.user.results : result:index}}
+		<tr>
+			<td style="width:30%;">{{=result.subject}}</td>
+			<td style="width:20%;">{{=result.username}}</td>
+			<td style="width:20%;">{{=result.write_datetime}}</td>
+			<td style="width:10%;">
+				{{?result.confirm_datetime != null}}
+					o
+				{{??}}
+					x
+				{{?}}
+			</td>
+			<td style="width:10%;">
+				<input type="submit" class="button" style="padding:2px; white-space:normal;" value="수정" onclick="Modify(&#39;{{=result.uid}}&#39;)">
+			</td>
+			<td style="width:10%;">
+				<input type="submit" class="button" style="padding:2px; white-space:normal; background-color:#EB2946" value="삭제" onclick="Delete(&#39;{{=result.uid}}&#39;)">
+			</td>
+			<input type="hidden" name="total" id="total" value ="{{=result.total_count}}"/>
+		</tr>
+		{{~}}
+	</tbody>
+	{{?}}
+</table>
+	<!-- 페이지 컨트롤 -->
+<style>
+	.pageButton { float: left; padding: 0px 10px; } .selectPageColor { color: #0078a0; }
+</style>
+<div id="idDivPage" style="width: 100%; height: 30px; text-align: center;"></div>
+<div id="reply_result"></div>
+
+<script src="/css/jquery-1.10.1.min.js"></script>
+<script src="/css/jquery-ui.js"></script>
+<script src="/css/pagination.js"></script>
+<script>
+$( document ).ready(function() {
+	var total = 1;
+	total = Number($('#total').val());
+	page = Number($('#page').val());
+	if(total) {
+		GetPageValue(total, page, 'admin-memo-result');
+	}
+});
+function Delete(uId){
+	if (!confirm("정말로 삭제하시겠습니까?")) return;
+	$.ajax({
+		url: "./memo-delete",
+		type: "POST",
+		data: {uId: uId},
+		success: function(data) {
+			Search(1);
+		}
+	});
+}
+function Modify(uId){
+	$.ajax({
+		url: "./get_memo_info",
+		type: "POST",
+		data: {uid: uId},
+		success: function(data) {
+			$("#memo_edit").html(data);
+			document.getElementById('idUpdateWrite').value = '수정';
+		}
+    });
+}
+</script>

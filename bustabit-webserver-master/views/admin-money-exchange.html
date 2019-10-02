@@ -1,0 +1,203 @@
+{{##def.page_title = '금액 환전 처리' #}}
+
+{{##def.content:
+<script>
+$( document ).ready(function() {
+	var total = 1;
+	total = Number($('#total').val());
+	page = Number($('#page').val());
+	var username = $('#username1').val();
+	var pay_state = $('#pay_state1').val();
+	if(username == '') {
+		document.getElementById('username').value = '';
+	}
+	else if(username != '') {
+		document.getElementById('username').value = username;
+	}
+	if(pay_state == '') {
+		document.getElementById('pay_state').value = '';
+	}
+	else if(pay_state != '') {
+		document.getElementById('pay_state').value = pay_state;
+	}
+	if(total && (username == '' && pay_state == '')) {
+		GetPageValue(total, page, 'admin-money-exchange');
+	}
+	else if(total && (username != '' || pay_state != '')) {
+		GetPageValue(total, page, 'admin-money-exchange?pay_state='+pay_state + '&username='+username, 'admin-money-exchange');
+	}
+});
+function Search(page){
+	var pay_state = document.getElementById('pay_state').value;
+	var username = document.getElementById('username').value;
+	location.href = '/admin-money-exchange?pay_state=' + pay_state + '&username=' + username; 
+}
+var page = document.getElementById('page').value;
+function Approval(moneyId, balance){
+	var money = balance.replace(/,/g, '');
+	if (!confirm("환전 승인을 하시겠습니까?")) return;
+	$.ajax({
+		url: "./money-exchange-approval",
+		type: "POST",
+		data: {moneyId: moneyId,
+			   money:   money},
+		success: function(data) {
+			location.href = '/admin-money-exchange?button=ok';
+		}
+	});
+}
+function Defer(moneyId, balance){
+	var money = balance.replace(/,/g, '');
+	if (!confirm("환전 보류를 하시겠습니까?")) return;
+	$.ajax({
+		url: "./money-exchange-defer",
+		type: "POST",
+		data: {moneyId: moneyId,
+			   money:   money},
+		success: function(data) {
+			location.href = '/admin-money-exchange?button=ok';
+		}
+	});
+}
+function Refuse(moneyId, balance){
+	
+	var money = balance.replace(/,/g, '');
+	if (!confirm("환전 거부를 하시겠습니까?")) return;
+	$.ajax({
+		url: "./money-exchange-refuse",
+		type: "POST",
+		data: {moneyId: moneyId,
+		       money:   money},
+		success: function(data) {
+			location.href = '/admin-money-exchange?button=ok';
+		}
+	});
+}
+function viewBetting(username) {
+	location.href='/user/'+username;
+}
+function viewIOInfo(uid) {
+	location.href='/viewInOutput?uid='+uid;
+}
+function viewDetail(username) {
+	$.ajax({
+		url: "./user_datail",
+		type: "POST",
+		data: {	
+			username: username,
+			urlname: 'charge'
+		},
+		success: function(data) {
+			$("#idDivUserInfo").html(data);
+			if (document.getElementById('idDivUserInfo').style.display == 'none') {	
+				document.getElementById('idDivUserInfo').style.top = (window.innerHeight / 2 - 250).toString() + 'px'; 
+				document.getElementById('idDivUserInfo').style.left = (window.innerWidth / 2 - 230).toString() + 'px'; 
+				document.getElementById('idDivUserInfo').style.display = 'block'; 
+				setTimeout(function () { if (document.getElementById('idDivUserInfo').style.display = 'block') { document.getElementById('idDivUserInfo').style.display = 'none'; } }, 300 * 1000); 
+			}
+		}
+	});
+}
+
+</script>
+<div class="content row panel radius">
+	<input type="hidden" name="page" id="page" value="{{=it.user.page}}"/>
+	<input type="hidden" name="button" id="button" value ="{{=it.user.button}}"/>
+	<input type="hidden" name="pay_state1" id="pay_state1" value="{{=it.user.pay_state}}"/>
+	<input type="hidden" name="username1" id="username1" value ="{{=it.user.searchname}}"/>
+	<div style="border-bottom:1px solid #DDDDDD; margin-bottom:20px;">
+		<div class="tabButton" onclick="location.href = &#39;/admin-money-charge&#39;">충전</div>
+		<div class="tabButtonSelect" onclick="location.href = &#39;/admin-money-exchange&#39;">환전</div>
+		<div style="clear:both;"></div>
+	</div>
+	<div class="search">
+		<input type="hidden" name="page" id="page" value="0"/>
+		<input type="hidden" name="button" id="button" value ="{{=it.user.button}}"/>
+		<div style="float: left; width: calc(100% - 1px);">
+			<label for="idLabNotice" style="padding:0px;display:inline;">환전 상태</label>
+			<select name="pay_state" id="pay_state" style="width:calc((100% - 26px) / 11); height:37px; padding:0px; margin-right:5px;">
+							<option>  </option>
+							<option>요청</option>
+							<option>승인</option>
+							<option>보류</option>
+							<option>거부</option>
+			</select>
+			<label for="idLabNotice" style="padding:0px;display:inline;">사용자명</label>
+			<input id="username" name="username" style="width:calc((100% - 26px) /8); height:37px; display:inline; padding:0px; white-space: normal; margin-right:5px;" type="text" value="">
+			<input id="idChargeMoney" class="light-button" style="width: 15%; height: 40px; padding: 3px; white-space: normal;" type="button" value="검색" onclick="Search(1);">
+		</div>
+	</div>
+	<div style="clear:both;"></div>
+	<div style="border: 1px solid #DDDDDD; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); padding: 5px;">
+		<label for="idLabAccount">
+			<span style="font-size: 14px; font-weight: bold;">합계: {{?it.user.results.length> 0}}{{=it.user.results[0].totalout}}{{??}}0{{?}}
+		</label>
+</div>
+<div style="margin-top:10px;"></div>
+<table class="leaders">
+	<thead>
+		<tr>
+			<td style="width:10%;">환전상태</td>
+			<td style="width:10%;">사용자명</td>
+			<td style="width:10%;">금액</td>
+			{{?it.user.userclass=='admin'}}
+			<td style="width:10%;">은행명</td>
+			<td style="width:10%;">예금주</td>
+			<td style="width:10%;">계좌번호</td>
+			<td style="width:10%;">요청날짜</td>
+			<td style="width:10%;">완료날짜</td>
+			<td style="width:20%;">처리</td>
+			{{??}}
+			<td style="width:10%;">날짜</td>
+			{{?}}
+		</tr>
+	</thead>
+	{{?it.user.results.length > 0}}
+	<tbody>
+		{{~it.user.results : result:index}}
+		<tr>
+			<td style="width:10%;">{{=result.pay_state}}</td>
+			<td style="width:10%;"><a onclick="viewDetail('{{=result.username}}')">{{=result.username}}</td>
+			<td style="width:10%; text-align:left;">{{=result.balance}}</td>
+			{{?it.user.userclass=='admin'}}
+			<td style="width:10%;">{{=result.bankindex}}</td>
+			<td style="width:10%;">{{=result.deposit_name}}</td>
+			<td style="width:10%;">{{=result.accountnum}}</td>
+			<td style="width:10%;">{{=result.request_datetime}}</td>
+			<td style="width:10%;">
+				{{?result.end_datetime != null}}
+					{{=result.end_datetime}}
+				{{?}}</td>
+			<td style="width:20%;">
+				{{?result.pay_state == '요청'}}
+					<input type="submit" class="button" style="width:calc((100%-5px)/3);height:30px;padding:2px; white-space:normal; background-color:#E88080;" value="승인" onclick="Approval(&#39;{{=result.id}}&#39;, &#39;{{=result.balance}}&#39;)"> <input type="submit" class="button " style="width:calc((100%-5px)/3);height:30px;padding:2px; white-space:normal; background-color:#F3962F;" value="보류" onclick="Defer(&#39;{{=result.id}}&#39;, &#39;{{=result.balance}}&#39;)"> <input type="submit" class="button" style="width:calc((100%-5px)/3);height:30px;padding:2px; white-space:normal;" value="거부" onclick="Refuse(&#39;{{=result.id}}&#39;, &#39;{{=result.balance}}&#39;)">
+				{{??result.pay_state == '보류'}}
+					<input type="submit" class="button" style="width:calc((100%-5px)/3);height:30px;padding:2px; white-space:normal; background-color:#E88080;" value="승인" onclick="Approval(&#39;{{=result.id}}&#39;, &#39;{{=result.balance}}&#39;)"> <input type="submit" class="button" style="width:calc((100%-5px)/3);height:30px;padding:2px; white-space:normal;" value="거부" onclick="Refuse(&#39;{{=result.id}}&#39;, &#39;{{=result.balance}}&#39;)">
+				{{?}}
+			</td>
+			{{??}}
+			<td style="width:10%;">
+				{{?result.end_datetime != null}}
+					{{=result.end_datetime}}
+				{{??}}
+					{{=result.request_datetime}}
+				{{?}}
+			</td>
+			{{?}}
+			<input type="hidden" name="total" id="total" value ="{{=result.total_count}}"/>
+		</tr>
+		{{~}}
+	</tbody>
+	{{?}}
+</table>
+<div id="idDivPage" style="width: 100%; height: 30px; text-align: center;"></div>
+<div id="idDivUserInfo" style="position: fixed; display: none;"></div>
+</div>
+<style>
+	.pageButton { float: left; padding: 0px 10px; } .selectPageColor { color: #0078a0; }
+</style>
+
+#}}
+
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

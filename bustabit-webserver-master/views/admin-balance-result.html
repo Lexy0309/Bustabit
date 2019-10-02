@@ -1,0 +1,48 @@
+<div style="float: left; width: calc(100%); bordor-color:#e9e9e9; border: 1px solid #cccccc;">
+	<label for="idLabMoney" class="left" style="width: calc((100%)/7); height:30px; text-align:center; background-color:#e7e7e7; 
+padding:5px;">합계</label>
+	{{?it.user.userclass=='admin'}}
+		<label for="idLabMoney" class="left" style="width: calc((100%)-(100%)/7); height:30px; text-align:center; padding:5px;"><font color="red">
+		{{=it.user.total}} - {{=it.user.atotal}} = {{=it.user.profit}} </font></label>
+	{{??}}
+		<label for="idLabMoney" class="left" style="width: calc((100%)-(100%)/7); height:30px; text-align:center; padding:5px;"><font color="red">
+		{{=it.user.total}}</font></label>
+	{{?}}
+</div>
+<table class="leaders">
+	<thead>
+		<tr>
+			<td style="width:10%;">날짜</td>
+			<td style="width:10%;">등급</td>
+			<td style="width:10%;">이름</td>
+			<td style="width:20%;">총입금액</td>
+			<td style="width:20%;">총출금액</td>
+			<td style="width:10%;">지분룔</td>
+			<td style="width:20%;">정산금액</td>
+		</tr>
+	</thead>
+		{{?it.user.results.length > 0}}
+		<tbody>
+			{{~it.user.results : result:index}}
+			<tr>
+				<td style="width:10%;">{{=result.datetime}}</td>
+				{{?it.user.userclass == 'admin'}}
+					<td style="width:10%;">총판</td>
+				{{??it.user.userclass=='distributor'}}
+					<td style="width:10%;">총판</td>
+				{{??it.user.userclass=='partner'}}
+					<td style="width:10%;">파트너</td>
+				{{?}}
+				<td style="width:10%;">{{=result.name}}</td>
+				<td style="width:20%;">{{=result.totalin}}</td>
+				<td style="width:20%;">{{=result.totalout}}</td>
+				<td style="width:20%;">{{=result.jibun}}</td>
+				<td style="width:20%;">{{=result.profit}}</td>
+				<input type="hidden" name="total" id="total" value ="{{=result.total_count}}"/>
+			</tr>
+			{{~}}
+		</tbody>
+		{{?}}	
+</table>
+
+

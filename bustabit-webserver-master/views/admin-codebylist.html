@@ -1,0 +1,194 @@
+{{##def.page_title = '유저 목록' #}}
+
+{{##def.content:
+<script type="text/javascript">
+$( document ).ready(function() {
+	var total = 1;
+	total = Number($('#total').val());
+	page = Number($('#page').val());
+	code = $('#code').val();
+
+	if(total) {
+		GetPageValue(total, page, 'admin-codebylist?code='+code, 'admin-codebylist');
+	}
+});
+function editInfo(uid){
+	$.ajax({
+		url: "./get_user_info",
+		type: "POST",
+		data: {	
+			userid: uid
+		},
+		success: function(data) {
+			$("#idDivAccountInfo").html(data);
+			if (document.getElementById('idDivAccountInfo').style.display == 'none') {	
+				document.getElementById('idDivAccountInfo').style.top = (window.innerHeight / 2 - 370).toString() + 'px'; 
+				document.getElementById('idDivAccountInfo').style.left = (window.innerWidth / 2 - 230).toString() + 'px'; 
+				document.getElementById('idDivAccountInfo').style.display = 'block'; 
+				setTimeout(function () { if (document.getElementById('idDivAccountInfo').style.display = 'block') { document.getElementById('idDivAccountInfo').style.display = 'none'; } }, 300 * 1000); 
+			}
+		}
+	});
+}
+function saveBalance(uid) {
+	var bal = Number(document.getElementById('balance0').value.replace(/,/g, ''));
+	var point = Number(document.getElementById('point0').value.replace(/,/g, ''));
+	location.href='/user_modify_balance?uid='+uid+'&balance='+bal+'&point='+point;
+}
+function modify(){
+	var uid = document.getElementById('userid').value;
+	var phone = document.getElementById('phone1').value;
+	var password = document.getElementById('password').value;
+	var confirm = document.getElementById('confirm').value;
+	var memo = document.getElementById('memo1').value;
+	var bank = document.getElementById('bank1').value;
+	var owner = document.getElementById('owner1').value;
+	var accountnum = document.getElementById('accountnum1').value;
+	var pwd = document.getElementById('pwd').value;
+
+	if(password != pwd) {alert('비밀번호를 확인하십시오.'); return;}
+	if((password != confirm) && (confirm!='')) {alert('비밀번호가 정확치 않습니다.'); return;}
+	page = Number($('#page').val());
+	$.ajax({
+		url: "./modify_user_info",
+		type: "POST",
+		data: {	
+			password: password,
+			phone: phone,
+			memo: memo,
+			userid: uid,
+			bank: bank,
+			owner: owner,
+			accountnum: accountnum
+		},
+		success: function(data) {
+			Search(page);
+			document.getElementById('idDivAccountInfo').style.display = 'none';
+		}
+	});
+}
+function setPlay(id) {
+	page = Number($('#page').val());
+	$.ajax({
+		url: "./set_play",
+		type: "POST",
+		data: {	
+			uid: id
+		},
+		success: function(data) {
+			alert('승인되었습니다.');
+			Search(page);
+			location.href='/admin-user';
+		}
+	});
+}
+function viewDetail(username) {
+	$.ajax({
+		url: "./user_datail",
+		type: "POST",
+		data: {	
+			username: username,
+			urlname: 'user'
+		},
+		success: function(data) {
+			$("#idDivUserInfo").html(data);
+			if (document.getElementById('idDivUserInfo').style.display == 'none') {	
+				document.getElementById('idDivUserInfo').style.top = (window.innerHeight / 2 - 250).toString() + 'px'; 
+				document.getElementById('idDivUserInfo').style.left = (window.innerWidth / 2 - 230).toString() + 'px'; 
+				document.getElementById('idDivUserInfo').style.display = 'block'; 
+				setTimeout(function () { if (document.getElementById('idDivUserInfo').style.display = 'block') { document.getElementById('idDivUserInfo').style.display = 'none'; } }, 300 * 1000); 
+			}
+		}
+	});
+}
+</script>
+<div class="content row panel radius">
+    <h5 id="top">유저 목록</h5>
+    <hr>
+
+	<input type="hidden" name="page" id="page" value ="{{=it.user.page}}"/>
+	<input type="hidden" name="code" id="code" value ="{{=it.user.code}}"/>
+	<table class="leaders">
+		<thead>
+			<tr>
+				<td style="width:8%;">ID</td>
+				<td style="width:7%;">이름</td>
+				<td style="width:10%;">보유캐쉬</td>
+				<td style="width:7%;">추천인코드</td>
+				<td style="width:7%;">접속IP</td>
+				<td style="width:7%;">가입IP</td>
+				<td style="width:7%;">가입일시</td>
+				<td style="width:7%;">마지막접속일</td>
+				<td style="width:7%;">접속횟수</td>
+				<td style="width:7%;">입출금내역</td>
+				{{?it.user.userclass == 'admin'}}
+				<td style="width:7%;">게임가능</td>
+				<td style="width:7%;">강퇴</td>
+				<td style="width:7%;">문의</td>
+				<td style="width:10%;">메모</td>
+				<td style="width:7%;">편집</td>
+				{{?}}
+
+			</tr>
+		</thead>
+			
+			{{?it.user.results.length > 0}}
+			<tbody>
+				{{~it.user.results : result:index}}
+				<tr>
+					<td style="width:8%;">
+						<a  onclick="viewDetail('{{=result.username}}')">{{=result.username}}</a>
+					</td>
+					<td style="width:7%;">{{=result.nameid}}</td>
+					<td style="width:10%;">{{=result.balance}}</td>
+					<td style="width:7%;">{{=result.partner_code}}</td>
+					<td style="width:7%;">{{=result.ip_address==null? ' ': result.ip_address}}</td>
+					<td style="width:7%;">{{=result.join_ip}}</td>
+					<td style="width:7%;">{{=result.created}}</td>
+					<td style="width:7%;">
+					{{?result.fcreated}}
+						{{=result.fcreated}}
+					{{?}}
+					</td>
+					<td style="width:7%;">{{=result.joincnt}}</td>
+					<td style="width:7%;">
+						<a href="/viewInOutput?uid={{=result.id}}">내역보기</a>
+					</td>
+					{{?it.user.userclass == 'admin'}}
+					<td style="width:7%;">
+					{{?result.allowplay == 0}}
+						<input type="submit" class="button" style=" white-space:normal; background-color:#EB2946" value="승인" onclick="setPlay({{=result.id}});">
+					{{??}}
+						<input type="submit" class="button" style=" white-space:normal;"  value="비승인" onclick="setPlay({{=result.id}});">
+					{{?}}
+					</td>
+					<td style="width:7%;">
+					{{?result.outisok == 1}}
+						<a href="/admin-cancelout?userid={{=result.id}}&page={{=it.user.page}}">강퇴취소</a>
+					{{?}}
+					</td>
+					<td style="width:7%;">
+						<a href="/admin-qna?username={{=result.username}}">보기</a>
+					</td>
+					<td style="width:10%;">{{=result.memo == null? ' ' : result.memo}}</td>
+					<td style="width:7%;">
+						<input type="submit" class="button" style="padding:2px; white-space:normal; background-color:#EB2946" value="편집" onclick="editInfo({{=result.id}})">
+					</td>
+					{{?}}
+					<input type="hidden" name="total" id="total" value ="{{=result.total_count}}"/>
+				</tr>
+				{{~}}
+			</tbody>
+			{{?}}	
+			
+	</table>
+	<div id="idDivPage" style="width: 100%; height: 30px; text-align: center;"></div>
+	<div id="idDivAccountInfo" style="position: fixed; display: none;"></div>
+	<div id="idDivUserInfo" style="position: fixed; display: none;"></div>
+</div>
+<style>
+	.pageButton { float: left; padding: 0px 10px; } .selectPageColor { color: #0078a0; }
+</style>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

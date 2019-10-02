@@ -1,0 +1,70 @@
+{{##def.page_title = '차단된 아이피' #}}
+
+{{##def.content:
+<script>
+	$( document ).ready(function() {
+	
+	});
+	function addBadip() {
+
+		var badip = document.getElementById('badip').value;
+		expUrl = /^(1|2)?\d?\d([.](1|2)?\d?\d){3}$/;
+		if(expUrl.test(badip) === false){
+			alert('형식이 올바르지 않습니다.');
+			return;
+		}
+		location.href = '/add_badip?badip=' + badip;
+	}
+	function Delete(uid) {
+		location.href = '/admin-badipDelete?uid=' + uid;
+	}
+
+	
+</script>
+<div class="content row panel radius">
+	<h5>차단된 아이피</h5> 
+	<hr>
+	<div style="margin-top:20px;"></div>
+	<div style="display:none;">
+		<input type="text" value="undefined" readonly="">
+	</div>
+	<div style="margin-top:30px;"></div>
+	<div style="float: left; width: calc(100% - 10px);">
+		<label for="idLabAccount" class="left" style="margin-bottom:6px; width:calc((100% - 25px) / 8); margin-right:5px; padding:3px; text-align:center; font-weight:bold;">아이피</label>
+		<input id="badip" name="badip" class="left" style="width:calc((100% - 30px) /8); height:37px; padding:3px; margin-right:10px;" type="text" value="">
+		<input type="submit" class="light-button left moneyFontSize" style="margin-bottom:6px; width:calc((100% - 20px) / 8); height:37px;" value="추가" onclick="addBadip();">
+		<input type="hidden" name="index" id="index" value ="0"/>
+	</div>
+	<div style="clear:both;"></div>
+	<div style="margin-top:50px;"></div>
+	 <h5>차단아이피목록</h5>
+	 <hr>
+	 <div id="result">
+		<table class="leaders">
+			<thead>
+				<tr>
+					<td style="width:10%;">번호</td>
+					<td style="width:30%;">아이피주소</td>
+					<td style="width:30%;">등록날짜</td>
+					<td style="width:30%;">삭제</td>
+				</tr>
+			</thead>
+			{{?it.user.results.length > 0}}
+			<tbody>
+				{{~it.user.results : result:index}}
+				<tr>
+					<td style="width:10%;">{{=index+1}}</td>
+					<td style="width:30%;">{{=result.ip_addr}}</td>
+					<td style="width:30%;">{{=result.datetime}}</td>
+					<td style="width:30%;">
+						<input type="submit" class="button" style="padding:2px; white-space:normal; background-color:#EB2946" value="삭제" onclick="Delete(&#39;{{=result.id}}&#39;)">
+					</td>
+				</tr>
+				{{~}}
+			</tbody>
+			{{?}}	
+		</table>
+	</div>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

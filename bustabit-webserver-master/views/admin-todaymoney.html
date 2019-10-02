@@ -1,0 +1,272 @@
+{{##def.page_title = '통계 및 정산' #}}
+
+{{##def.content:
+<script>
+	$( document ).ready(function() {
+        var from_date = '{{=it.user.date1}}';
+        var to_date = '{{=it.user.date2}}';
+		var userclass = '{{=it.user.userclass}}';
+		if(userclass == 'admin') {
+            $('#bydate1').val(from_date.substring(0, 7) + '-01');
+            $('#bydate2').val(to_date.substring(0, 7) + '-01');
+        }
+
+		$('#bydate1').datepicker();
+		$('#bydate2').datepicker();
+		$('#fromdate').datepicker();
+		$('#enddate').datepicker();
+
+	});
+	function dateSearch(solecode, uclass) { 
+		var fromdate = document.getElementById('fromdate').value;
+		var enddate = document.getElementById('enddate').value;
+		$.ajax({
+			url: "./date_search",
+			type: "POST",
+			data: {fromdate : fromdate,
+				   enddate  : enddate,
+				   solecode : solecode,
+				   uclass   : uclass},
+			success: function(data) {
+				$("#result").html(data);
+			}
+		});
+	}
+	function settlement() {
+        var bydate1 = document.getElementById('bydate1').value;
+        var bydate2 =  document.getElementById('bydate2').value;
+        if (window.confirm("정산하겠습니까?") == true) {
+            $.ajax({
+                url: "./today-settlement",
+                type: "POST",
+                data: {
+                    bydate1 : bydate1,
+                    bydate2 : bydate2
+				},
+                success: function(data) {
+                    alert('정산되었습니다.');
+                    location.href = '/admin-todaymoney';
+
+                }
+            });
+        } else {
+           return;
+        }
+	}
+	function viewPartner() { 
+		location.href = '/admin-viewPartner';
+	}
+    function viewPartner1(solecode) {
+        location.href = '/admin-viewPartner1?solecode='+solecode;
+    }
+	function viewDetail(solecode, userclass) {
+		var fromdate = document.getElementById('fromdate').value;
+		var enddate = document.getElementById('enddate').value;
+		location.href = '/admin-todayViewDetail?fromdate='+fromdate+'&enddate='+enddate+'&solecode='+solecode+'&userclass='+userclass;
+	}
+	function before_month(username){
+		 var year= document.getElementById("select_year"); 
+		 var month= document.getElementById("select_month"); 
+		 if(month.innerHTML==1){ 
+				month.innerHTML=12; 
+				year.innerHTML= parseInt(year.innerHTML)-1; 
+			} else{ 
+				month.innerHTML=parseInt(month.innerHTML)-1;
+		 } 
+		 if(!username)
+			location.href = '/admin-todaymoney?year='+parseInt(year.innerHTML)+'&month='+parseInt(month.innerHTML);
+		 else if(username)
+			location.href = '/admin-todaymoney?year='+parseInt(year.innerHTML)+'&month='+parseInt(month.innerHTML)+'&username='+username;
+		 
+	}	
+	function after_month(username){ 
+		 var year = window.document.getElementById("select_year"); 
+		 var month = window.document.getElementById("select_month"); 
+		 if(month.innerHTML==12){ 
+				month.innerHTML=1; 
+				year.innerHTML=parseInt(year.innerHTML)+1; 
+			} else { 
+				month.innerHTML=parseInt(month.innerHTML)+1; 
+		 } 
+		 if(!username)
+			location.href = '/admin-todaymoney?year='+parseInt(year.innerHTML)+'&month='+parseInt(month.innerHTML);
+		 else if(username)
+			location.href = '/admin-todaymoney?year='+parseInt(year.innerHTML)+'&month='+parseInt(month.innerHTML)+'&username='+username;
+	}
+	function before_year(username){
+		 var year= document.getElementById("select_year"); 
+		 year.innerHTML= parseInt(year.innerHTML)-1; 
+		 var month = window.document.getElementById("select_month");
+		 if(!username)
+			location.href = '/admin-todaymoney?year='+parseInt(year.innerHTML)+'&month='+parseInt(month.innerHTML);
+		 else if(username)
+			location.href = '/admin-todaymoney?year='+parseInt(year.innerHTML)+'&month='+parseInt(month.innerHTML)+'&username='+username;
+	} 
+	function after_year(username){ 
+		 var year = window.document.getElementById("select_year");
+		 var month = window.document.getElementById("select_month");
+		 year.innerHTML=parseInt(year.innerHTML)+1; 
+		 if(!username)
+			location.href = '/admin-todaymoney?year='+parseInt(year.innerHTML)+'&month='+parseInt(month.innerHTML);
+		 else if(username)
+			location.href = '/admin-todaymoney?year='+parseInt(year.innerHTML)+'&month='+parseInt(month.innerHTML)+'&username='+username;
+	}
+	function BalAccount(username){ 
+		location.href = '/admin-balance-account?username='+username;
+	}
+	
+</script>
+<div class="content row panel radius">
+	<div style="border-bottom:1px solid #DDDDDD; margin-bottom:20px;">
+		<div class="tabButtonSelect" onclick="location.href = &#39;/admin-todaymoney&#39;">통계및정산</div>
+		<div class="tabButton" onclick="BalAccount('{{=it.user.username}}')">정산내역</div>
+		<div style="clear:both;"></div>
+	</div>
+	
+	<div style="margin-top:20px;"></div>
+	<div style="display:none;">
+		<label for="idLabAccount">계좌 정보</label>
+		<input type="text" value="undefined" readonly="">
+	</div>
+	<div style="margin-top:30px;"></div>
+	{{?it.user.userclass == 'admin'}}
+	<div style="float: left; width: calc(100% - 10px);">
+		<input id="bydate1" name="bydate1" class="left" style="width:calc((100% - 30px) /8); height:37px; padding:3px; margin-left:10px; margin-right:10px;" type="text" value="{{=it.user.date1}}">
+		<label for="idLabAccount" class="left" style="margin-bottom:6px; width:calc((100% - 20px) / 15); margin-right:5px; padding:3px; text-align:center; font-weight:bold;"> ~ </label>
+		<input id="bydate2" name="bydate2" class="left" style="width:calc((100% - 30px) /8); height:37px; padding:3px; margin-right:10px;" type="text" value="{{=it.user.date2}}">
+		<input type="submit" class="light-button left moneyFontSize" style="margin-bottom:6px; width:calc((100% - 20px) / 8); height:37px;" value="정산완료" onclick="settlement();">
+		<input type="hidden" name="index" id="index" value ="0"/>
+	</div>
+	{{?}}
+	<div style="clear:both;"></div>
+	<div style="margin-top:10px;"></div>
+	<hr>
+	 <div style="float: left; width: calc(100%); bordor-color:#e9e9e9; border: 1px solid #cccccc;">
+		<label for="idLabMoney" class="left" style="width: calc((100%)/4); height:30px; text-align:center; background-color:#e7e7e7; padding:5px;">총 유저머니</label>
+		<label for="idLabMoney" class="left" style="width: calc((100%)/4); height:30px; text-align:center; padding:5px;"><font color="red" id="total_bal">{{=it.user.total_bal}}</font></label>
+		<label for="idLabMoney" class="left" style="width: calc((100%)/4); height:30px; text-align:center; padding:5px; background-color:#e7e7e7;">총 보너스머니</label>
+		<label for="idLabMoney" class="left" style="width: calc((100%)/4); height:30px; text-align:center; padding:5px;"><font color="red" id="total_point">{{=it.user.total_point}}</font></label>
+	</div>
+	 <hr>
+	<div style="float: left; width: calc(100%); bordor-color:#e9e9e9; border: 1px solid #cccccc;">
+		<label for="idLabMoney" class="left" style="width: calc((100%)/4); height:30px; text-align:center; background-color:#e7e7e7; padding:5px;">총매출액</label>
+		<label for="idLabMoney" class="left" style="width: calc((100%)/4); height:30px; text-align:center; padding:5px;"><font color="red" id="totalin">{{=it.user.totalin}}</font>/<font color="blue" id="totalout">{{=it.user.totalout}}</font>/<font color="green" id="profit">{{?it.user.profit == 'NaN'}}0{{??}}{{=it.user.profit}}{{?}}</font></label>
+		<label for="idLabMoney" class="left" style="width: calc((100%)/4); height:30px; text-align:center; padding:5px; background-color:#e7e7e7;">월 매출액</label>
+		<label for="idLabMoney" class="left" style="width: calc((100%)/4); height:30px; text-align:center; padding:5px;"><font color="red" id="monthin">{{?it.user.monthin == 'NaN'}}0{{??}}{{=it.user.monthin}}{{?}}</font>/<font color="blue" id="monthout">{{?it.user.monthout == 'NaN'}}0{{??}}{{=it.user.monthout}}{{?}}</font>/<font color="green" id="monthprofit">{{?it.user.monthprofit == 'NaN'}}0{{??}}{{=it.user.monthprofit}}{{?}}</font></label>
+	</div>
+	<div style="clear:both;"></div>
+	<div style="margin-top:10px;"></div>
+	<div style="float: left; width: calc(100%);">
+		{{?it.user.userflag == 0}}
+		<input type="submit" class="button secondary left" style="width:calc((100%-100px)/12); height:30px;margin-left:250px; padding:0px; margin-right:5px;" value="이전년도" onclick="before_year();">
+		<input type="submit" class="button secondary left" style="width:calc((100%-100px)/12); height:30px; padding:0px;margin-right:5px;" value="이전달" onclick="before_month();">
+		<span id="select_year" class="left" style="width: calc((100%-30px)/30); height:30px; text-align:right; padding:7px;">{{=it.user.year}}</span>
+		<label class="left" style="width: calc((100%-100px)/30); height:30px; text-align:center; padding:3px;">년</label> 
+		<span id="select_month" class="left" style="width: calc((100%-30px)/40); height:30px; text-align:right; padding:7px;">{{=it.user.month}}</span>
+		<label class="left" style="width: calc((100%-100px)/40); height:30px; margin-right:5px; text-align:center; padding:3px;">월</label> 
+		<input type="submit" class="button secondary left" style="width:calc((100%-100px)/12); height:30px; padding:0px; margin-right:5px;" value="다음달" onclick="after_month();">
+		<input type="submit" class="button secondary left" style="width:calc((100%-100px)/12); height:30px; padding:0px; margin-right:5px;" value="다음년도" onclick="after_year();">
+		{{??}}
+		<input type="submit" class="button secondary left" style="width:calc((100%-100px)/12); height:30px;margin-left:250px; padding:0px; margin-right:5px;" value="이전년도" onclick="before_year('{{=it.user.username}}');">
+		<input type="submit" class="button secondary left" style="width:calc((100%-100px)/12); height:30px; padding:0px;margin-right:5px;" value="이전달" onclick="before_month('{{=it.user.username}}');">
+		<span id="select_year" class="left" style="width: calc((100%-30px)/30); height:30px; text-align:right; padding:7px;">{{=it.user.year}}</span>
+		<label class="left" style="width: calc((100%-100px)/30); height:30px; text-align:center; padding:3px;">년</label> 
+		<span id="select_month" class="left" style="width: calc((100%-30px)/40); height:30px; text-align:right; padding:7px;">{{=it.user.month}}</span>
+		<label class="left" style="width: calc((100%-100px)/40); height:30px; margin-right:5px; text-align:center; padding:3px;">월</label> 
+		<input type="submit" class="button secondary left" style="width:calc((100%-100px)/12); height:30px; padding:0px; margin-right:5px;" value="다음달" onclick="after_month('{{=it.user.username}}');">
+		<input type="submit" class="button secondary left" style="width:calc((100%-100px)/12); height:30px; padding:0px; margin-right:5px;" value="다음년도" onclick="after_year('{{=it.user.username}}');">
+		{{?}}
+	</div>
+	<div style="clear:both;"></div>
+	<div style="margin-top:10px;"></div>
+	<div id="calenderTable">
+	{{=it.user.table}}
+	</div>
+	<div style="margin-top:10px;"></div>
+	<div style="float: left; width: calc(100% - 10px);">
+		<input id="fromdate" name="fromdate" class="left" style="width:calc((100% - 30px) /8); height:37px; padding:3px; margin-left:10px; margin-right:10px;" type="text" value="{{=it.user.date1}}">
+		<label for="idLabAccount" class="left" style="margin-bottom:6px; width:calc((100% - 20px) / 15); margin-right:5px; padding:3px; text-align:center; font-weight:bold;"> ~ </label>
+		<input id="enddate" name="enddate" class="left" style="width:calc((100% - 30px) /8); height:37px; padding:3px; margin-right:10px;" type="text" value="{{=it.user.date2}}">
+		{{?it.user.userclass == 'admin'}}
+		<input type="submit" class="light-button left moneyFontSize" style="margin-right:5px;margin-bottom:6px; width:calc((100% - 20px) / 8); height:37px;" value="매출보기" onclick="dateSearch();">
+		{{??it.user.userclass == 'distributor' && it.user.userflag == 1}}
+		<input type="submit" class="light-button left moneyFontSize" style="margin-bottom:6px; width:calc((100% - 20px) / 8); height:37px; margin-right:5px;" value="매출보기" onclick="dateSearch('{{=it.user.solecodeinput}}', '{{=it.user.userclass}}');">
+		<input type="submit" class="light-button left moneyFontSize" style="margin-bottom:6px; width:calc((100% - 20px) / 8); height:37px;" value="되돌이" onclick="location.href = &#39;/admin-viewPartner&#39;">
+		{{??it.user.userclass == 'distributor' && it.user.userflag == 0}}
+		<input type="submit" class="light-button left moneyFontSize" style="margin-bottom:6px; width:calc((100% - 20px) / 8); height:37px; margin-right:5px;" value="매출보기" onclick="dateSearch('{{=it.user.solecodeinput}}', '{{=it.user.userclass}}');">
+
+		{{??it.user.userclass == 'partner' && it.user.userflag == 1}}
+		<input type="submit" class="light-button left moneyFontSize" style="margin-bottom:6px; width:calc((100% - 20px) / 8); height:37px; margin-right:5px;" value="매출보기" onclick="dateSearch('{{=it.user.solecodeinput}}', '{{=it.user.userclass}}');">
+		<input type="submit" class="light-button left moneyFontSize" style="margin-bottom:6px; width:calc((100% - 20px) / 8); height:37px;" value="되돌이" onclick="location.href = &#39;/admin-viewPartner1?backcode={{=it.user.solecodeinput}}&#39;">
+		{{??it.user.userclass == 'partner' && it.user.userflag == 0}}
+		<input type="submit" class="light-button left moneyFontSize" style="margin-bottom:6px; width:calc((100% - 20px) / 8); height:37px; margin-right:5px;" value="매출보기" onclick="dateSearch('{{=it.user.solecodeinput}}', '{{=it.user.userclass}}');">
+
+		{{?}}
+		<input type="hidden" name="index" id="index" value ="0"/>
+	</div>
+	<div style="clear:both;"></div>
+	<div style="margin-top:10px;"></div>
+	<div id="result"></div>
+	{{?it.user.userflag == 0}}
+	<div id="controlButton" style="width: 100%; height: 30px; text-align: center;">
+		<input id="viewDetail" class="button secondary" style="width: 15%; height:30px; padding: 3px; white-space: normal; margin-right: 20px;" type="button" value="상세보기" onclick="viewDetail('{{=it.user.solecodeinput}}', '{{=it.user.userclass}}');">
+		{{?it.user.userclass == 'distributor'}}
+			<input type="hidden" name="solecode" id="solecode" value ="{{=it.user.solecodeinput}}"/>
+			<input id="idChargeMoney" class="button secondary" style="width: 15%; height: 30px; padding: 3px; white-space: normal;" type="button" value="파트너보기" onclick="viewPartner1('{{=it.user.solecodeinput}}');">
+		{{??it.user.userclass == 'admin'}}
+			<input id="idChargeMoney" class="button secondary" style="width: 15%; height: 30px; padding: 3px; white-space: normal;" type="button" value="총판보기" onclick="viewPartner();">
+		{{?}}
+	</div>
+	{{?}}
+	{{?it.user.userflag == 1}}
+	<div id="controlButton" style="width: 100%; height: 30px; text-align: center;">
+		<input id="viewDetail" class="button secondary" style="width: 15%; height:30px; padding: 3px; white-space: normal; margin-right: 20px;" type="button" value="상세보기" onclick="viewDetail('{{=it.user.solecodeinput}}', '{{=it.user.userclass}}');">
+		{{?it.user.userclass == 'distributor'}}
+		<input type="hidden" name="solecode" id="solecode" value ="{{=it.user.solecodeinput}}"/>
+		<input id="idChargeMoney" class="button secondary" style="width: 15%; height: 30px; padding: 3px; white-space: normal;" type="button" value="파트너보기" onclick="viewPartner1('{{=it.user.solecodeinput}}');">
+		{{??it.user.userclass == 'admin'}}
+		<input id="idChargeMoney" class="button secondary" style="width: 15%; height: 30px; padding: 3px; white-space: normal;" type="button" value="총판보기" onclick="viewPartner();">
+		{{?}}
+	</div>
+	{{?}}
+
+	<script>
+        /* Added by JJB 2017.10.23.*/
+        var getQueryString = function ( field, url ) {
+            var href = url ? url : window.location.href;
+            var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
+            var string = reg.exec(href);
+            return string ? string[1] : null;
+        };
+        var refreshInfoTimer = setInterval(refreshInfo, 6000);
+        function refreshInfo()
+        {
+            var username = (getQueryString('username') == null)? '{{=it.user.username}}' : getQueryString('username');
+            var year 	= getQueryString('year');
+            var month 	= getQueryString('month');
+            $.ajax({
+                url: "./refreshTodayMoney",
+                type: "POST",
+                data: {
+                    username : username,
+					year : year,
+					month: month
+                },
+                success: function(results) {
+                    $('#calenderTable').html(results.table);
+                    $('#total_bal').html(results.total_bal);
+                    $('#total_point').html(results.total_point);
+                    $('#totalin').html(results.totalin);
+                    $('#totalout').html(results.totalout);
+                    $('#profit').html((results.profit == 'NaN')? 0 : results.profit);
+                    $('#monthin').html((results.monthin == 'NaN')? 0 : results.monthin);
+                    $('#monthout').html((results.monthout == 'NaN')? 0 : results.monthout);
+                    $('#monthprofit').html((results.monthprofit == 'NaN')? 0 : results.monthprofit);
+                }
+            });
+        }
+        /* End */
+	</script>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

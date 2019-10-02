@@ -1,0 +1,64 @@
+{{##def.page_title = 'Game Info' #}}
+
+{{##def.content:
+    <div class="row panel radius">
+        <h4>게임 <strong>{{=it.game.dcreated}} {{=it.game.game_no}}회차</strong> 정보</h4>
+        <p>
+            <b>게임 결과: </b> {{#def.format: { n: it.game.crash, decimals: 2 } }}x
+        </p>
+        <p>
+            <b>플레이 시간: </b>{{=it.game.created}}
+        </p>
+        <hr>
+        <h6>참여유저</h6>
+        <table class="user-table">
+          <thead>
+            <tr>
+                <td>유저</td>
+                <td>배팅금</td>
+                <td>수익률</td>
+                <td>보너스</td>
+                <td>순수익</td>
+            </tr>
+          </thead>
+          <tbody>
+            {{~it.plays :play:index}}
+                <tr {{?!play.cash_out}}class="lose"{{?}}>
+                    <td>
+                        <strong>
+                            <a href="/user/{{=play.username}}">{{=play.username}}</a>
+                        </strong>
+                    </td>
+                    <td>
+                        {{#def.format: { n: play.bet } }} KRW
+                    </td>
+                    <td>
+                        {{? play.cash_out}}
+                        <!--{{#def.format: {n: play.cash_out / play.bet * 100, decimals: 2} }}x-->
+						{{#def.format: {n: play.cash_out / play.bet * 100, decimals: 2} }}x
+                        {{??}}
+                        손실
+                        {{?}}
+                    </td>
+                    <td>
+                        {{? play.bonus }}
+                           {{#def.format: {n: play.bonus/play.bet* 100 * 100, decimals: 2} }}%
+                        {{??}}
+                          -
+                        {{?}}
+                    </td>
+                    <td>
+                        <!--{{#def.format: { n: (play.cash_out ? play.cash_out : 0) - play.bet + ( play.bonus ? play.bonus : 0) , decimals: 2 } }}-->
+						{{#def.format: { n: (play.cash_out ? play.cash_out : 0) - play.bet + ( play.bonus ? play.bonus : 0) } }}
+                        KRW
+                    </td>
+                </tr>
+            {{~}}
+          </tbody>
+        </table>
+       <!-- <h6><b>해쉬:</b> <a href="/faq#fair">{{=it.game.hash}}</a></h6>-->
+    </div>
+
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

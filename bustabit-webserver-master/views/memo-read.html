@@ -1,0 +1,42 @@
+{{##def.page_title = '쪽지함' #}}
+
+{{##def.content:
+<script>
+function DeleteMemo(index) { 
+	if (!confirm("삭제 하시겠습니까?")) 
+	return; location.href = '/memo-delete?idx=' + index; 
+}
+$( document ).ready(function() {
+	document.getElementById('idContent').value = decodeURIComponent(document.getElementById('pid').value);
+});
+</script>
+<div class="content row panel radius">
+	<h5>쪽지함</h5> 
+	<hr>
+	<input type="hidden" name="pid" id="pid" value="{{=it.user.content.content}}"/>
+	<table class="leaders">
+		<thead>
+			<tr>
+				<td style="width:50%; text-align:left;">
+					{{=it.user.content.subject}}
+				</td>
+				<td style="width:20%;">관리자</td>
+				<td style="width:30%;">{{=it.user.content.datetime}}</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td style="width:100%;" rows="2" cols="20">
+					<textarea rows="2" id="idContent" cols="20" style="min-height:150px; width:100%; border:0px;box-shadow:none;"  wrap="hard" readonly=""></textarea>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<input id="idOpenList" class="button secondary left" type="button" value="목록" onclick="location.href = &#39;/memo-list&#39;">
+	<input id="idOpenPrev" class="button secondary left" style="margin-left:5px;" type="button" value="윗글" onclick="location.href = &#39;/memo-prev?idx={{=it.user.content.uid}}&#39;">
+	<input id="idOpenNext" class="button secondary left" style="margin-left:5px;" type="button" value="아랫글" onclick="location.href = &#39;/memo-next?idx={{=it.user.content.uid}}&#39;">
+	<input id="idDeleteMemo" class="button secondary right" type="button" value="삭제" onclick="DeleteMemo(&#39;{{=it.user.content.uid}}&#39;)">
+</div>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

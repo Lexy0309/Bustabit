@@ -1,0 +1,31 @@
+{{##def.page_title = '글쓰기' #}}
+
+{{##def.content:
+<script type="text/javascript">
+	function InsertQNA() { 
+		if (document.getElementById('idTitle').value.replace(/ /g, '') == '') { 
+			alert('제목을 입력해 주세요.'); return; 
+		} 
+		if (document.getElementById('idContent').value.replace(/ /g, '') == '') { 
+			alert('문의사항을 입력해 주세요.'); return; 
+		} 
+		if (!confirm("등록 하시겠습니까?")) return; 
+		var title = encodeURIComponent(document.getElementById('idTitle').value);
+		var content = encodeURIComponent(document.getElementById('idContent').value);
+		console.log(content);
+		location.href = '/qna-insert?title=' + title + '&text=' + content; }
+</script>
+<div class="content row panel radius">
+	<h5>1:1문의</h5> 
+	<hr>
+	
+	<label for="idLabTitle">제목</label>
+	<input id="idTitle" name="idTitle" type="text" value="" maxlength="50" required="">
+	<label for="idLabContent">문의사항</label>
+	<textarea id="idContent" rows="2" cols="20" style="min-height:150px; overflow:auto" wrap="hard" required=""></textarea>
+	<input id="idOpenList" class="button secondary right" type="button" value="취소" onclick="location.href = &#39;/qna-list&#39;">
+	<input id="idUpdateWrite" class="button secondary right" style="margin-right:5px;" type="button" value="등록" onclick="InsertQNA();">
+</div>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

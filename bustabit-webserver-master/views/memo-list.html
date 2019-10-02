@@ -1,0 +1,64 @@
+{{##def.page_title = '쪽지함' #}}
+
+{{##def.content:
+<script>
+$( document ).ready(function() {
+	var total = 1;
+	total = Number($('#total').val());
+	page = Number($('#page').val());
+	if(total) {
+		GetPageValue(total, page, 'memo-list');
+	}	
+});
+	
+</script>
+<div class="content row panel radius">
+
+    <h5>쪽지함</h5>
+    <hr>
+
+	<input type="hidden" name="page" id="page" value ="{{=it.user.page}}"/>
+
+    <table class="leaders">
+        <thead>
+            <tr>
+				<td style="width:10%;">No</td>
+				<td style="width:60%;">제목</td>
+				<td style="width:10%;">상태</td>
+				<td style="width:20%;">날짜</td>
+
+            </tr>
+        </thead>
+        <tbody>
+            {{~it.user.leaders :leader:index}}
+                <tr>
+                    <td style="width:10%">{{=index+1}}</td>
+                        
+                    </td>
+                    <td style="width:60%;text-align:left;">
+                        <a href="/memo-read?idx={{=leader.uid}}">{{=leader.subject}}</a>
+                    </td>
+					<td style="width:10%">
+						{{?leader.confirm_datetime == null}}
+							미확인
+						{{??}}
+							확인
+						{{?}}
+					</td>
+					<td style="width:20%">
+						<!-- 날짜 -->{{=leader.datetime}}</td>
+					<input type="hidden" name="total" id="total" value ="{{=leader.total_count}}"/>
+				</tr>
+            {{~}}
+        </tbody>
+    </table>
+	</div>
+<style>
+	.pageButton { float: left; padding: 0px 10px; } .selectPageColor { color: #0078a0; }
+</style>
+<div id="idDivPage" style="width: 100%; height: 30px; text-align: center;"></div>
+
+
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

@@ -1,0 +1,142 @@
+#chart-controls-inner-container {
+    min-height: 18.5rem;
+    height: 100%;
+}
+@media handheld, only screen and (max-width: 767px) {
+    #chart-controls-inner-container {
+        min-height: 7rem;
+
+    }
+}
+/* Big Screens with small controls */
+@media handheld, only screen and (min-width: 767px) {
+    #chart-controls-inner-container.small {
+        min-height: 4.7rem;
+    }
+}
+
+#chart-container {
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 10px;
+    right: calc(40% + 10px);
+}
+
+#controls-container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 60%;
+    right: 0;
+    border: 1px solid #ddd;
+    margin: 5px;
+}
+
+
+/* Big Screens with small controls */
+@media handheld, only screen and (min-width: 767px) {
+
+    #chart-container.small {
+        top: 3px;
+        bottom: 3px;
+        left: 10px;
+        right: calc(50% + 3px);
+    }
+
+    #controls-container.small {
+        left: 50%;
+    }
+}
+#result-container {
+	box-sizing:border-box;
+	border:1px solid #DDD;
+	margin:5px;
+	font-size:14px;
+	height:50px
+}
+.result-box{
+	float:right;
+	box-sizing:border-box;
+	background-image:-webkit-linear-gradient(#fff,#eee 50%,#e0e0e0);
+	background-image:-o-linear-gradient(#fff,#eee 50%,#e0e0e0);
+	background-image:-webkit-gradient(linear,left top,left bottom,from(#fff),color-stop(50%,#eee),to(#e0e0e0));
+	background-image:linear-gradient(#fff,#eee 50%,#e0e0e0);
+	background-repeat:no-repeat;
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe0e0e0', GradientType=0);
+	-webkit-filter:none;
+	filter:none;
+	border:1px solid #d5d5d5;
+	border-radius:5px;
+	margin:5px 2.5px 5px 2.5px;
+	padding:2px;
+	height:38px
+}
+.result-box-inner {
+	text-align:center;
+	font-weight:700;
+	height:17px;
+	font-size:9px;
+	margin-top:-3px
+}
+.result-box-inner-crash {
+	box-sizing:border-box;
+	background-image:url(../img/button-result.png);
+	background-size:100% 100%;
+	margin:3px auto;
+	padding:0;
+	font-size:16px;
+	width:95%;
+	height:20px;
+	font-size:11px;
+	height:16px;
+	line-height:16px
+}
+
+/* Small Screens */
+@media handheld, only screen and (max-width: 767px) {
+	/*add by lt*/
+	#result-container {
+		position:absolute;
+		top:calc(100% - 6.3rem - 50px);
+		bottom:0;
+		left:0;
+		right:0
+	}
+    
+    #chart-container {
+        top: 0;
+        bottom: 4.6rem;
+        left: 0;
+        right: 0;
+        margin: 0.5rem;
+    }
+
+    #controls-container{
+        top: calc(100% - 6.3rem);
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border: none;
+    }
+	/*add by lt*/
+	/*
+	#chart-container {
+		top: 0;
+		bottom: calc(6.3rem + 50px);
+		left: 0;
+		right: 0;
+		margin: .5rem;
+	}
+	*/
+}
+/*add by lt*/
+.result-box-green {
+	color:green
+}
+.result-box-red {
+	color:red
+}
+.result-box-black {
+	color:#000
+}

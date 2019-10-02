@@ -1,0 +1,48 @@
+{{##def.page_title = '1:1문의' #}}
+
+{{##def.content:
+<script>
+$( document ).ready(function() {
+	Search(1);
+});
+function Search(page){
+	document.getElementById('page').value = Number(page);
+	$.ajax({
+		url: "./search-qna-list",
+		type: "POST",
+		data: $("form.condition").serialize(),
+		success: function(data) {
+			$("#result").html(data);
+			
+		}
+	});
+}
+
+</script>
+<div class="content row panel radius">
+	<div class="search">
+		<form class="condition">
+			<input type="hidden" name="page" id="page" value="0"/>
+			<input type="hidden" name="kind" value=" ">
+			<div style="float: left; width: calc(100% - 5px);">
+				<label for="idLabNotice" style="padding:5px;display:inline;">사용자명</label>
+				<!--
+				<select name="username" id="username" style="width:calc((100% - 26px) /7); height:37px; display:inline; padding:5px; margin-right:5px">
+					<option>  </option>
+					{{~it.user.results : result:index}}
+							<option>{{=result.username}}</option>
+					{{~}}
+					
+				</select>
+				-->
+				<input id="username" name="username" style="width:calc((100% - 26px) /7); height:37px; display:inline; padding:5px; white-space: normal; margin-right:5px;" type="text" value="{{?it.user.param}}{{=it.user.param}}{{?}}">
+				<input id="idChargeMoney" class="light-button" style=" width: 15%; height: 37px; padding: 5px;" type="button" value="검색" onclick="Search(1);">
+			</div>
+		</form>
+	</div>
+<div id="result"></div>
+</div>
+#}}
+
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

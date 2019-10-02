@@ -1,0 +1,99 @@
+<input type="hidden" name="page" id="page" value ="{{=it.user.page}}"/>
+<input type="hidden" name="unread_qna" id="unread_qna" value ="{{=it.user.unread_qna}}"/>
+<table class="leaders">
+	<thead>
+		<tr>
+			<td style="width:30%;">제목</td>
+			<td style="width:20%;">작성자</td>
+			<td style="width:20%;">작성날짜</td>
+			<td style="width:10%;">확인</td>
+			<td style="width:10%;">답변</td>
+			<td style="width:10%;">삭제</td>
+
+		</tr>
+	</thead>
+	{{?it.user.results.length > 0}}
+	<tbody>
+		{{~it.user.results : result:index}}
+		<tr inquiry_no="{{=result.no}}" flag="{{=result.confirm_datetime}}">
+			<td class="pointer" style="width:30%;">{{=result.subject}}</td>
+			<td class="pointer" style="width:20%;">{{=result.username}}</td>
+			<td style="width:20%;">{{=result.request_datetime}}</td>
+			<td style="width:10%;">
+				{{?result.confirm_datetime != null}}
+					o
+				{{??}}
+					x
+				{{?}}
+			</td>
+			<td style="width:10%;">
+				{{?result.reply_datetime != null}}
+					o
+				{{??}}
+					x
+				{{?}}
+			</td>
+			<td style="width:10%;">
+				<input type="submit" class="button" style="padding:2px; white-space:normal; background-color:#EB2946" value="삭제" onclick="Delete(&#39;{{=result.no}}&#39;)">
+			</td>
+			<input type="hidden" name="total" id="total" value ="{{=result.total_count}}"/>
+
+		</tr>
+		{{~}}
+	</tbody>
+	{{?}}
+</table>
+	<!-- 페이지 컨트롤 -->
+<style>
+	.pageButton { float: left; padding: 0px 10px; } .selectPageColor { color: #0078a0; }
+</style>
+<div id="idDivPage" style="width: 100%; height: 30px; text-align: center;"></div>
+<div id="reply_result"></div>
+
+<script src="/css/jquery-1.10.1.min.js"></script>
+<script src="/css/jquery-ui.js"></script>
+<script src="/css/pagination.js"></script>
+<script>
+var count = 0;
+$( document ).ready(function() {
+	var total = 1;
+	total = Number($('#total').val());
+	page = Number($('#page').val());
+	if(total) {
+		GetPageValue(total, page, 'admin-qna-result');
+	}
+});
+var page = document.getElementById('page').value;
+
+$("#result .pointer").click(function() {
+        var $tr = $(this).parents("tr");
+        var inquiry_no = $tr.attr("inquiry_no");
+		var $tt = $(this).parents("tr");
+		var flag = $tt.attr("flag");
+		var unread_count = Number($('#unread_qna').val());
+		if(flag == 'null') {count = count + 1;}
+		else count = 0;
+		if(unread_count > 0 ) set_unread_qna(unread_count - count);
+		$.ajax({
+			url: "./reply-result",
+			type: "POST",
+			data: {inquiry_no: inquiry_no},
+			success: function(data) {
+				$("#reply_result").html(data);
+				$tr.children("td:eq(3)").html("o");
+				
+			}
+		});
+});
+function Delete(uNo){
+	if (!confirm("정말로 삭제하시겠습니까?")) return;
+	$.ajax({
+		url: "./qna-delete",
+		type: "POST",
+		data: {uNo: uNo},
+		success: function(data) {
+			Search(1);
+		}
+	});
+}
+</script>

@@ -1,0 +1,44 @@
+{{##def.page_title = 'Login' #}}
+
+{{##def.content:
+
+<div class="login">
+    <form action="/login" method="post" onsubmit="return submitEnabled;">
+        <div class="row">
+            <div class="large-12 columns">
+                <label>사용자계정
+                    <input type="text" name="username" required/>
+                </label>
+            </div>
+        </div>
+         <div class="row">
+            <div class="large-12 columns">
+                <label>비밀번호
+                    <input type="password" name="password" required />
+                </label>
+            </div>
+         </div>
+        <div class="row">
+            <div class="large-12 columns">
+                <label>
+                    Remember me
+                    <input type="checkbox" name="remember">
+                </label>
+            </div>
+        </div>
+         <div class="row">
+            <div class="large-12 columns">
+                <!--<a class="small" href="/forgot-password">Forgot your password?</a>-->
+                <input id="loginSubmit" style="display: block" class="border-button right blue" value="로그인" type="submit" />
+				<input id="registerSubmit" style="display: block; margin-right:10px;" class="border-button right blue" type="button" value="회원가입" onclick="location.href = &#39;/register&#39;">
+							
+            </div>
+        </div>
+
+    </form>
+</div>
+
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}
+

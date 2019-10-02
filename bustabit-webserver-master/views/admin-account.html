@@ -1,0 +1,155 @@
+{{##def.page_title = '계정관리' #}}
+
+{{##def.content:
+<script>
+	$( document ).ready(function() {
+	
+	});
+	function insertAccount() { 
+		if (document.getElementById('bank').value.replace(/ /g, '') == '') { 
+			alert('은행명을 입력해 주세요.'); return; 
+		} 
+		if (document.getElementById('accountnum').value.replace(/ /g, '') == '') { 
+			alert('계좌번호를 입력해 주세요.'); return; 
+		} 
+		if (document.getElementById('owner').value.replace(/ /g, '') == '') { 
+			alert('예금주를 입력해 주세요.'); return; 
+		} 
+		var bank = document.getElementById('bank').value;
+		var accountnum = document.getElementById('accountnum').value;
+		var owner = document.getElementById('owner').value;
+		var memo = document.getElementById('memo').value;
+		location.href = '/admin-account-insert?bank=' + bank + '&accountnum=' + accountnum + '&owner=' + owner + '&memo=' + memo; 
+	}
+	function Delete(uid) {
+		if (!confirm("정말로 삭제 하시겠습니까?")) return;
+		location.href = '/admin-deleteAccount?uid=' + uid;
+	}
+	function ModifyInfo(uid, nstate) {
+		var recobj = document.getElementById("record_" + uid);
+        var recupobj = document.getElementById("recupdate_" + uid);
+        if(recobj == null || recupobj == null)
+            return;            
+        recobj.style.display = (nstate == 1) ? "" : "none";
+        recupobj.style.display = (nstate == 0) ? "" : "none";
+	}
+	function Modify(uid) {
+		var bank = 'bank_'+uid;
+		var accountnum = 'accountnum_'+uid;
+		var owner = 'owner_'+uid;
+		var memo = 'memo_'+uid;
+		 if (document.getElementById(bank).value.replace(/ /g, '') == '') { 
+			alert('은행명을 입력해 주세요.'); return; 
+		} 
+		if (document.getElementById(accountnum).value.replace(/ /g, '') == '') { 
+			alert('계좌번호를 입력해 주세요.'); return; 
+		} 
+		if (document.getElementById(owner).value.replace(/ /g, '') == '') { 
+			alert('예금주를 입력해 주세요.'); return; 
+		}
+		$.ajax({
+			url: "./admin-account-modify",
+			type: "POST",
+			data: {
+				bank: document.getElementById(bank).value.replace(/ /g, ''),
+				accountnum: document.getElementById(accountnum).value.replace(/ /g, ''),
+				owner: document.getElementById(owner).value.replace(/ /g, ''),
+				memo: document.getElementById(memo).value.replace(/ /g, ''),
+				uid: uid
+			},
+			success: function(data) {
+				alert('정보수정완료');
+				location.href = '/admin-account';
+			}
+		});
+	}
+	function selectAccount(uid, state){
+		location.href = '/admin-selectAccount?uid=' + uid + '&state=' + state;
+	}
+	
+</script>
+<div class="content row panel radius">
+	<h5>계정관리</h5> 
+	<hr>
+	<form class="condition">
+			<div style="float: left; width: calc(100% - 1px);">
+				<label for="idLabNotice" style="padding:0px;display:inline;">은행명</label>
+				<input id="bank" name="bank" style="width:calc((100% - 26px) /6); height:37px; display:inline; padding:0px; white-space: normal; margin-right:5px;" type="text" value="" required>
+
+				<label for="idLabNotice" style="padding:0px;display:inline;">계좌번호</label>
+				<input id="accountnum" name="accountnum" style="width:calc((100% - 26px) /6); height:37px; display:inline; padding:0px; white-space: normal; margin-right:5px;" type="text" value="">
+
+				<label for="idLabNotice" style="padding:0px;display:inline;">예금주</label>
+				<input id="owner" name="owner" style="width:calc((100% - 26px) /6); height:37px; display:inline; padding:0px; white-space: normal; margin-right:5px;" type="text" value="" required>
+
+				<label for="idLabNotice" style="padding:0px;display:inline;">비고</label>
+				<input id="memo" name="memo" style="width:calc((100% - 26px) / 4); height:37px; padding:0px; display:inline; white-space: normal; margin-right:5px;" type="text" value="">
+			</div>
+		</form>
+		<div style="clear:left; text-align:center">
+			<input id="" class="button secondary" style="margin-right:5px;" type="button" value="등록" onclick="insertAccount();">
+			<input id="idOpenList" class="button secondary" style="margin-right: 5px;" type="button" value="취소" onclick="location.href = &#39;/admin-account&#39;">
+		</div>
+	<div style="clear:both;"></div>
+	<div style="margin-top:5px;"></div>
+	 <h5>계좌목록</h5>
+	 <hr>
+	 <div id="result">
+		<table class="leaders">
+			<thead>
+				<tr>
+					<td style="width:5%;">번호</td>
+					<td style="width:10%;">은행명</td>
+					<td style="width:20%;">계좌번호</td>
+					<td style="width:20%;">예금주</td>
+					<td style="width:20%;">비고</td>
+					<td style="width:10%;">수정</td>
+					<td style="width:10%;">삭제</td>
+					<td style="width:5%;">
+					</td>
+				</tr>
+			</thead>
+			{{?it.user.results.length > 0}}
+			<tbody>
+				{{~it.user.results : result:index}}
+				<tr id="record_{{=result.id}}">
+					<td style="width:5%;">{{=index+1}}</td>
+					<td style="width:10%;">{{=result.bank}}</td>
+					<td style="width:20%;">{{=result.accountnum}}</td>
+					<td style="width:20%;">{{=result.owner}}</td>
+					<td style="width:20%;">{{=result.memo}}</td>
+					<td style="width:10%;">
+						<input type="submit" class="button" style="padding:2px; white-space:normal; background-color:#EB2946" value="수정" onclick="ModifyInfo(&#39;{{=result.id}}&#39;, 0)">
+					</td>
+					<td style="width:10%;">
+						<input type="submit" class="button" style="padding:2px; white-space:normal; background-color:#EB2946" value="삭제" onclick="Delete(&#39;{{=result.id}}&#39;)">
+					</td>
+					<td style="width:5%;">
+						{{?result.isok == 1}}
+							<input id="idChkAll_{{=result.id}}" name="chkbox" type="checkbox" checked onclick="selectAccount(&#39;{{=result.id}}&#39;, 0);">
+						{{??}}
+							<input id="idChkAll_{{=result.id}}" name="chkbox" type="checkbox" onclick="selectAccount(&#39;{{=result.id}}&#39;, 1);">
+						{{?}}
+					</td>
+				</tr>
+				<tr id="recupdate_{{=result.id}}" style="display: none">
+					<td style="width:5px;">*</td>
+					<td style="width:10px;"><input type="text" id="bank_{{=result.id}}" name="bank" value="{{=result.bank}}"></td>
+					<td style="width:20px;"><input type="text" id="accountnum_{{=result.id}}" name="accountnum" value="{{=result.accountnum}}"></td>
+					<td style="width:20px;"><input type="text" id="owner_{{=result.id}}" name="owner" value="{{=result.owner}}" style="width: 100px"></td>
+					<td style="width:20px;"><input type="text" id="memo_{{=result.id}}" name="memo" value="{{=result.memo}}"></td>
+					<td style="width:10px;">
+						<input type="submit" class="button" style="padding:2px; white-space:normal; background-color:#EB2946" value="확인" onclick="Modify(&#39;{{=result.id}}&#39;)">
+					</td>
+					 <td style="width:10px;">
+						<input type="submit" class="button" style="padding:2px; white-space:normal; background-color:#EB2946" value="취소" onclick="ModifyInfo(&#39;{{=result.id}}&#39;, 1)">
+					</td>
+            </tr>
+          	{{~}}
+			</tbody>
+			{{?}}	
+		</table>
+	</div>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

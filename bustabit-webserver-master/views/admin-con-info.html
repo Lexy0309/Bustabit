@@ -1,0 +1,31 @@
+<div style="width: 400px; height: 350px; padding: 10px; background: #FFFFF5; border: 4px solid #F3962F;">
+		<form class="condition">
+			<label for="idLabAccount">접속자 정보 편집</label>
+			<div style="margin-top:10px;"></div>
+			{{?it.user.result}}
+			<label for="idLabNotice" style="float:left; width:20%;padding-top: 5px;padding-left: 5px;">회원이름</label>
+			<input id="username1" name="username1" type="text" style="float: left; width: 30%;" value="{{=it.user.result.username}}" readonly="">
+			<label for="idLabNotice" style="float:left; width:100%;padding-top: 5px;">캐쉬</label>
+			<input id="balance0" name="balance0" type="text" style="float: left; width: 100%; margin-bottom:10px;" value="{{=it.user.result.balance_satoshis}}" onkeypress="return isNumberKey(event)">
+			<label for="idLabNotice" style="float:left; width:100%;padding-top: 5px;">메모</label>
+			<textarea id="memo1" name="memo1" rows="4" cols="20"  wrap="hard" style="float: left; width: 100%; margin-bottom:10px; background: #FFFFF5;">{{=it.user.result.memo}}
+			</textarea>
+			<input type="hidden" name="userid" id="userid" value="{{=it.user.result.id}}"/>
+			{{?}}
+			<input id="idCloseAccountInfo" class="button secondary right" type="button" value="닫기" style="margin-left:5px;" onclick="document.getElementById(&#39;idDivAccountInfo&#39;).style.display = &#39;none&#39;;">
+			<input id="idCloseAccountInfo" class="button secondary right" type="button" value="저장" onclick="modify()">
+
+		</form>
+</div>
+<script>
+function isNumberKey(evt) { 
+		document.getElementById('balance0').addEventListener("input", function () {
+			var money = document.getElementById('balance0').value.replace(/,/g, ''); 
+			money = money.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"); 
+			document.getElementById('balance0').value = money; 
+		});
+		var charCode = (evt.which) ? evt.which : event.keyCode; 
+		if (charCode > 31 && (charCode < 48 || charCode > 57)) return false; 
+		return true; 
+	};
+</script>

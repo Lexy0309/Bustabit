@@ -1,0 +1,14 @@
+<script src="/css/jquery-1.10.1.min.js"></script>
+<script src="/css/jquery-ui.js"></script>
+<script src="/css/pagination.js"></script>
+<script type="text/javascript">
+$( document ).ready(function() {
+	if(document.getElementById('partner_auth_index').value != '0')
+		alert('인증된 추천코드입니다.');
+	else alert('추천코드를 다시 입력하십시오.');
+	document.getElementById('partner_auth_index1').value = document.getElementById('partner_auth_index').value;
+});
+
+</script>
+
+<input id="partner_auth_index" type="text" name="partner_auth_index" value="{{?it.result}}{{=it.result.id}}{{??}}0{{?}}" style="display:none;">

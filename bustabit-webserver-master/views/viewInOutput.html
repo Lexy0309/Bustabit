@@ -1,0 +1,238 @@
+{{##def.page_title = '금액 충전 요청' #}}
+
+{{##def.content:
+<div class="content row panel radius">
+	 <h5>충전 내역</h5>
+	 <hr>
+	 <table class="leaders">
+		<thead>
+			<tr>
+				<td style="width:20%;">날짜</td>
+				<td style="width:20%;">금액</td>
+				<td style="width:10%;">상태</td>
+			</tr>
+		</thead>
+		{{?it.user.moneyIn.length > 0}}
+		<tbody>
+			{{~it.user.moneyIn : money:index}}
+			<tr>
+				<td style="width:20%;">{{=money.datetime}}</td>
+				<td style="width:20%; text-align:right;">+{{=money.balance}}</td>
+				<td style="width:10%;">{{=money.pay_state}}</td>
+				<input type="hidden" name="total_in" id="total_in" value ="{{=money.sum}}"/>
+			</tr>
+			{{~}}
+		</tbody>
+		{{?}}
+	 </table>
+	 <div style="border: 1px solid #DDDDDD; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); padding: 5px;">
+		 <label for="idLabAccount">
+			<span style="font-size: 14px; font-weight: bold;">합계: {{=it.user.totalIn}}
+		 </label>
+	 </div>
+	 <div id="idDivPage1" style="width: 100%; height: 30px; text-align: center;"></div>
+	 <hr>
+	 <h5>환전 내역</h5>
+	 <hr>
+	 <table class="leaders">
+		<thead>
+			<tr>
+				<td style="width:20%;">날짜</td>
+				<td style="width:20%;">금액</td>
+				<td style="width:10%;">상태</td>
+			</tr>
+		</thead>
+		{{?it.user.moneyOut.length > 0}}
+		<tbody>
+			{{~it.user.moneyOut : money:index}}
+			<tr>
+				<td style="width:20%;">{{=money.datetime}}</td>
+				<td style="width:20%; text-align:right;">-{{=money.balance}}</td>
+				<td style="width:10%;">{{=money.pay_state}}</td>
+				<input type="hidden" name="total_out" id="total_out" value ="{{=money.sum}}"/>
+			</tr>
+			{{~}}
+		</tbody>
+		{{?}}
+	 </table>
+	 <div style="border: 1px solid #DDDDDD; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); padding: 5px;">
+		<label for="idLabAccount">
+			<span style="font-size: 14px; font-weight: bold;">합계: {{=it.user.totalOut}}
+		</label>
+	 </div>
+	 <div id="idDivPage2" style="width: 100%; height: 30px; text-align: center;clear:both;"></div>
+	 <hr>
+	 <h5>보너스 내역</h5>
+	 <hr>
+	  <table class="leaders">
+		 <thead>
+			<tr>
+				<td style="width:25%;">날짜</td>
+				<td style="width:25%;">금액</td>
+				<td style="width:25%;">상태</td>
+			</tr>
+		 </thead>
+		 {{?it.user.moneyPoint.length > 0}}
+		 <tbody>
+			{{~it.user.moneyPoint : money:index}}
+			<tr>
+				<td style="width:25%;">{{=money.datetime}}</td>
+				<td style="width:25%; text-align:right;">+{{=money.balance}}</td>
+				<td style="width:25%;">{{=money.pay_state}}</td>
+				<input type="hidden" name="total_out" id="total_out" value ="{{=money.sum}}"/>
+			</tr>
+			{{~}}
+		 </tbody>
+		 {{?}}
+		 </table>
+		 <div style="border: 1px solid #DDDDDD; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); padding: 5px;">
+			<label for="idLabAccount">
+				<span style="font-size: 14px; font-weight: bold;">합계: {{=it.user.totalPoint}}
+			</label>
+		 </div>
+		 <div id="idDivPage3" style="width: 100%; height: 30px; text-align: center;clear:both;"></div>
+</div>		 
+<input type="hidden" name="total1" id="total1" value ="{{=it.user.moneyIn.total_count}}"/>
+<input type="hidden" name="page1" id="page1" value ="{{=it.user.page1}}"/>
+<input type="hidden" name="total2" id="total2" value ="{{=it.user.moneyOut.total_count}}"/>
+<input type="hidden" name="page2" id="page2" value ="{{=it.user.page2}}"/>
+<input type="hidden" name="total3" id="total3" value ="{{=it.user.moneyPoint.total_count}}"/>
+<input type="hidden" name="page3" id="page3" value ="{{=it.user.page3}}"/>
+<script>
+	function delete1(id, uid){
+		if(!confirm("정말로 삭제하시겠습니까?")) return;
+		location.href = '/moneyIn-delete?id='+id+'&uid='+uid;
+	}
+	function delete2(id, uid){
+		if(!confirm("정말로 삭제하시겠습니까?")) return;
+		location.href = '/moneyOut-delete?id='+id+'&uid='+uid;
+	}
+	function SetCookie1(cName, cValue, cDay) { 
+		var expire = new Date(); 
+		expire.setDate(expire.getDate() + cDay); 
+		cookies = cName + '=' + escape(cValue) + '; path=/ '; 
+		if (typeof cDay != 'undefined') cookies += ';expires=' + expire.toGMTString() + ';'; 
+		document.cookie = cookies; 
+	}
+	function GetCookie1(cName) { 
+		cName = cName + '='; 
+		var cookieData = document.cookie; 
+		var start = cookieData.indexOf(cName); 
+		var cValue = ''; 
+		if (start != -1) { 
+			start += cName.length; 
+			var end = cookieData.indexOf(';', start);
+			if (end == -1) end = cookieData.length; 
+			cValue = cookieData.substring(start, end); 
+		} 
+		return unescape(cValue); 
+	}
+	function GetPageValue_1(target, renderid, total, page, currentURL, uid) {
+		var pageIndex = Number(page);  
+		var pageSize = Number('5');
+		var totalCount = 1;
+		totalCount = total;
+		var pageCount = parseInt(totalCount / pageSize);
+		if (pageCount <= 0) pageCount = 0; 
+		if (totalCount % pageSize > 0) pageCount++; 
+		var maxPageTab = 5;
+		if (pageCount < maxPageTab) maxPageTab = pageCount;
+		
+		var pageTabBegin = 'pageTabBegin'+target;
+		var pageTabEnd = 'pageTabEnd'+target;
+		
+		if (pageIndex == 1){  
+			SetCookie1(pageTabBegin, 0); 
+			SetCookie1(pageTabEnd, maxPageTab); 
+		} 
+		var sLoopIndex = Number(GetCookie1(pageTabBegin));
+		var eLoopIndex = Number(GetCookie1(pageTabEnd));
+		if (pageIndex > eLoopIndex){
+			SetCookie1(pageTabBegin, (pageIndex) - maxPageTab); 
+			SetCookie1(pageTabEnd, (pageIndex)); 
+			sLoopIndex = Number(GetCookie1(pageTabBegin));
+			eLoopIndex = Number(GetCookie1(pageTabEnd)); 
+		} 
+		if (pageIndex - 1 < sLoopIndex){ 
+			SetCookie1(pageTabBegin, (pageIndex - 1)); 
+			SetCookie1(pageTabEnd, (pageIndex - 1) + maxPageTab); 
+			sLoopIndex = Number(GetCookie1(pageTabBegin)); 
+			eLoopIndex = Number(GetCookie1(pageTabEnd)); 
+		}
+		AddPage(target, renderid, pageIndex, pageCount, sLoopIndex, eLoopIndex,currentURL, uid);
+	}
+	function AddPage(target, renderid, pageIndex, pageCount, sLoopIndex, eLoopIndex, currentURL, uid) {
+		if(eLoopIndex == 0) return;
+		var prevIndex = Number(pageIndex) - 1;
+		if (prevIndex < 1) prevIndex = 1; 
+		var nextIndex = Number(pageIndex) + 1; 
+		if (nextIndex > pageCount) nextIndex = pageCount; 
+		var html = ''; 
+		html += '<div style="display:inline-block;">'; 
+		html += '<div class="pageButton" style="display:block;float:left;padding:5px;">'; 
+		if(uid)
+		{
+			html += '<a href="/' + currentURL + '&page=' + prevIndex + '&target='+target+'">이전</a>'; 
+		}
+		else
+		{
+			html += '<a href="/' + currentURL + '?page=' + prevIndex + '&target='+target+'">이전</a>'; 
+		}
+		html += '</div>';
+		for (var i = sLoopIndex; i < eLoopIndex; i++) {
+			var temp;
+			/* Why the errors?
+			if ((i + 1) == Number(pageIndex)) {
+				temp = '<span class="selectPageColor">' + (i + 1) + '</span>'; 
+			}
+			else { 
+				temp = (i + 1); 
+			}
+			*/
+			
+			temp = (i + 1);
+			html += '<div class="pageButton" style="display:block;float:left;padding:5px;">'; 
+			if(uid){ html += '<a href="/' + currentURL + '&page=' + (i + 1) + '&target='+target+'">' + temp + '</a>'; html += '</div>';}
+			else   { html += '<a href="/' + currentURL + '?page=' + (i + 1) + '&target='+target+'">' + temp + '</a>'; html += '</div>';}
+		} 
+		html += '<div class="pageButton" style="display:block;float:left;padding:5px;">'; 
+		if(uid) html += '<a href="/' + currentURL + '&page=' + nextIndex + '&target='+target+'">다음</a>';  
+		else html += '<a href="/' + currentURL + '?page=' + nextIndex + '&target='+target+'">다음</a>'; 
+		html += '</div>';
+		html += '</div>';
+		document.getElementById(renderid).innerHTML = html; 
+	}
+    /**
+     * Get the value of a querystring
+     * @param  {String} field The field to get the value of
+     * @param  {String} url   The URL to get the value from (optional)
+     * @return {String}       The field value
+     */
+    var getQueryString = function ( field, url ) {
+        var href = url ? url : window.location.href;
+        var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
+        var string = reg.exec(href);
+        return string ? string[1] : null;
+    };
+
+	$(document).ready(function(){
+		var total1 = 1;
+		total1 = Number($('#total1').val());
+		page1 = Number($('#page1').val());
+		
+		var total2 = 1;
+		total2 = Number($('#total2').val());
+		page2 = Number($('#page2').val());
+		
+		var total3 = 1;
+		total3 = Number($('#total3').val());
+		page3 = Number($('#page3').val());
+
+        GetPageValue_1('1', 'idDivPage1', total1, page1, 'viewInOutput?uid=' + '{{=it.user.userid}}', '{{=it.user.userid}}');
+        GetPageValue_1('2', 'idDivPage2', total2, page2, 'viewInOutput?uid=' + '{{=it.user.userid}}', '{{=it.user.userid}}');
+        GetPageValue_1('3', 'idDivPage3', total3, page3, 'viewInOutput?uid=' + '{{=it.user.userid}}', '{{=it.user.userid}}');
+	});
+</script>
+#}}
+
+{{#def.include('./template/main_new')}}

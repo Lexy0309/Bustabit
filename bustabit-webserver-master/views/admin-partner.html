@@ -1,0 +1,113 @@
+{{##def.page_title = '추천인' #}}
+
+{{##def.content:
+<script type="text/javascript">
+$( document ).ready(function() {
+	var total = 1;
+	total = Number($('#total').val());
+	page = Number($('#page').val());
+
+	var name1 = $('#name1').val();
+	var partner_code1 = $('#partner_code1').val();
+	if(name1 == '') document.getElementById('name').value = '';
+	else if(name1 != '') document.getElementById('name').value = name1;
+	if(partner_code1 == '')	document.getElementById('partner_code').value = '';
+	else if(partner_code1 != '') document.getElementById('partner_code').value = partner_code1;
+	
+	if(total && (name1 == '' && partner_code1 == '')) {
+		GetPageValue(total, page, 'admin-partner');
+	}
+	else if(total && (name1 != '' || partner_code1 != '')) {
+		GetPageValue(total, page, 'admin-partner?name=' + name1 + '&partner_code=' + partner_code1, 'admin-partner');
+	}
+});
+function Search(page) { 
+	var name = document.getElementById('name').value;
+	var partner_code = document.getElementById('partner_code').value;
+	location.href = '/admin-partner?name=' + name + '&partner_code=' + partner_code; 
+}
+
+/**
+ * Added by jjb 2017.10.21.
+ */
+function modify(uId){
+	page = Number($('#page').val());
+	location.href = '/modify_partner?uId=' +uId;
+}
+function deletePt(uId){
+	if(!confirm("정말로 삭제하시겠습니까?")) return;
+	location.href = '/partner-delete?uId=' + uId;
+}
+// End
+</script>
+
+<div class="content row panel radius">
+	<h5>추천인보기</h5> 
+	<hr>
+	<div style="float: left; width: calc(100% - 1px);">
+		<label for="idLabNotice" style="padding:0px;display:inline;">이름</label>
+		<input id="name" name="name" style="width:calc((100% - 26px) /6); height:37px; display:inline; padding:0px; white-space: normal; margin-right:5px;" type="text" value="">
+		<label for="idLabNotice" style="padding:0px;display:inline;">추천코드</label>
+		<input id="partner_code" name="partner_code" style="width:calc((100% - 26px) / 6); height:37px; padding:0px; display:inline; white-space: normal; margin-right:100px;" type="text" value="">
+		<input id="idChargeMoney" class="light-button" style="width: 15%; height: 40px; padding: 3px; white-space: normal;" type="button" value="검색" onclick="Search(1);">
+	</div>
+	<div style="clear:left; text-align:center">
+		<input id="idOpenList" class="button secondary left" type="button" value="등록" onclick="location.href = &#39;/partner-register&#39;">
+	</div>
+	<input type="hidden" name="page" id="page" value ="{{=it.user.page}}"/>
+	<input type="hidden" name="name1" id="name1" value ="{{=it.user.name}}"/>
+	<input type="hidden" name="partner_code1" id="partner_code1" value ="{{=it.user.partner_code}}"/>
+
+	<table class="leaders">
+	<thead>
+		<tr>
+			<td style="width:20%;">이름</td>
+			<td style="width:10%;">비밀번호</td>
+			<td style="width:10%;">유형</td>			
+			<td style="width:10%;">소속</td>
+			<td style="width:20%;">추천코드</td>
+			<td style="width:10%;">지분률</td>
+			{{?it.user.userclass == 'admin'}}
+			<td style="width:10%;">수정</td>
+			<td style="width:10%;">삭제</td>
+			{{?}}
+		</tr>
+	</thead>
+		{{?it.user.results.length > 0}}
+		<tbody>
+			{{~it.user.results : result:index}}
+			{{?result.pclass == 'distributor'}}
+			<tr style="background-color:#bffffb;">
+			{{??}}
+			<tr>
+			{{?}}
+			<td style="width:20%;">
+				<a href="/admin-codeByList?code={{=result.partner_code}}">{{=result.name}}</a>
+			</td>
+			<td style="width:10%;">{{=result.password}}</td>
+			<td style="width:10%;">{{?result.pclass == 'distributor'}}총판{{??}}파트너{{?}}</td>
+			<td style="width:10%;">{{?result.pclass == 'partner'}}{{=result.belong}}{{?}}</td>
+			<td style="width:20%;">{{=result.partner_code}}</td>
+			<td style="width:10%;">{{=result.jibun}}%</td>
+			{{?it.user.userclass == 'admin'}}
+			<td style="width:10%;">
+				<input type="submit" class="button" style="padding:1px;" value="수정" onclick="modify(&#39;{{=result.id}}&#39;)">
+			</td>
+			<td style="width:10%;">
+				<input type="submit" class="button" style="padding:2px; white-space:normal; background-color:#EB2946" value="삭제" onclick="deletePt(&#39;{{=result.id}}&#39;)">
+			</td>
+			{{?}}
+			<input type="hidden" name="total" id="total" value ="{{=result.total_count}}"/>
+			</tr>
+			{{~}}
+		</tbody>
+		{{?}}	
+	</table>
+	<div id="idDivPage" style="width: 100%; height: 30px; text-align: center;"></div>
+</div>
+<style>
+	.pageButton { float: left; padding: 0px 10px; } .selectPageColor { color: #0078a0; }
+</style>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

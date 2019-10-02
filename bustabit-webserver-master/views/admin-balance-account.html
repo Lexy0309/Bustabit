@@ -1,0 +1,77 @@
+{{##def.page_title = '정산내역' #}}
+
+{{##def.content:
+<script>
+	$( document ).ready(function() {
+		$('#bydate1').datepicker();
+		$('#bydate2').datepicker();
+	});
+	function settlement(username) { 
+		var fromdate = document.getElementById('bydate1').value;
+		var enddate = document.getElementById('bydate2').value;
+		location.href = '/admin-balance-account?fromdate=' + fromdate + '&enddate=' + enddate + '&username=' + username;
+	}
+	function BalAccount(username){ 
+		location.href = '/admin-balance-account?username='+username;
+	}
+</script>
+<div class="content row panel radius">
+	<div style="border-bottom:1px solid #DDDDDD; margin-bottom:20px;">
+		<div class="tabButton" onclick="location.href = &#39;/admin-todaymoney&#39;">통계및정산</div>
+		<div class="tabButtonSelect" onclick="BalAccount('{{=it.user.username}}')">정산내역</div>
+		<div style="clear:both;"></div>
+	</div>
+	<div style="float: left; width: calc(100% - 10px);">
+		<input id="bydate1" name="bydate1" class="left" style="width:calc((100% - 30px) /8); height:37px; padding:3px; margin-left:10px; margin-right:10px;" type="text" value="{{=it.user.date1}}">
+		<label for="idLabAccount" class="left" style="margin-bottom:6px; width:calc((100% - 20px) / 15); margin-right:5px; padding:3px; text-align:center; font-weight:bold;"> ~ </label>
+		<input id="bydate2" name="bydate2" class="left" style="width:calc((100% - 30px) /8); height:37px; padding:3px; margin-right:10px;" type="text" value="{{=it.user.date2}}">
+		<input type="submit" class="light-button left moneyFontSize" style="margin-bottom:6px; width:calc((100% - 20px) / 8); height:37px;" value="검색" onclick="settlement('{{=it.user.username}}');">
+		<input type="hidden" name="index" id="index" value ="0"/>
+	</div>
+	<div id="result">
+		<div style="float: left; width: calc(100%); bordor-color:#e9e9e9; border: 1px solid #cccccc;">
+			<label for="idLabMoney" class="left" style="width: calc((100%)/7); height:30px; text-align:center; background-color:#e7e7e7; 
+				padding:5px;">합계</label>
+				{{?it.user.userclass=='admin'}}
+					<label for="idLabMoney" class="left" style="width: calc((100%)-(100%)/7); height:30px; text-align:center; padding:5px;"><font color="red">
+					{{=it.user.total_in}} - {{=it.user.total_out}} = {{=it.user.total_profit}} </font></label>
+				{{??}}
+					<label for="idLabMoney" class="left" style="width: calc((100%)-(100%)/7); height:30px; text-align:center; padding:5px;"><font color="red">
+					{{=it.user.total_profit}}</font></label>
+				{{?}}
+		</div>
+		<table class="leaders">
+			<thead>
+				<tr>
+					<td style="width:10%;">날짜</td>
+					<td style="width:10%;">등급</td>
+					<td style="width:10%;">이름</td>
+					<td style="width:20%;">총입금액</td>
+					<td style="width:20%;">총출금액</td>
+					<td style="width:10%;">지분룔</td>
+					<td style="width:15%;">정산금액</td>
+					<td style="width:5%;">상태</td>
+				</tr>
+			</thead>
+				{{?it.user.results.length > 0}}
+				<tbody>
+					{{~it.user.results : result:index}}
+					<tr>
+						<td style="width:10%;">{{=result.datetime}}</td>
+						<td style="width:10%;">{{=result.classname}}</td>
+						<td style="width:10%;">{{=result.name}}</td>
+						<td style="width:20%;">{{=result.totalin}}</td>
+						<td style="width:20%;">{{=result.totalout}}</td>
+						<td style="width:20%;">{{=result.jibun}}</td>
+						<td style="width:15%;">{{=result.profit}}</td>
+						<td style="width:5%;">{{=result.state}}</td>
+					</tr>
+					{{~}}
+				</tbody>
+				{{?}}	
+		</table>
+	</div>
+</div>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

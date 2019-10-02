@@ -1,0 +1,53 @@
+<div style="width: 400px; height: 320px; padding: 10px; background: #FFFFFF; border: 4px solid #F3962F;">
+	<label for="idLabAccount" style="font-weight:bold;">회원정보보기</label>
+	<div style="margin-top:10px;"></div>
+	{{?it.user.results}}
+		<label for="idLabNotice" style="float:left; width:20%;padding-top: 5px;padding-left: 5px;">총입금액</label>
+		<input id="username1" name="username1" type="text" style="float: left; width: 30%;" value="{{=it.user.results.inputmoney}}" readonly="">
+		<label for="idLabNotice" style="float:left; width:20%;padding-top: 5px;padding-left: 5px;">총출금액</label>
+		<input id="phone1" name="phone1" type="text" style="float: left; width: 30%; margin-bottom:10px;" value="{{=it.user.results.outputmoney}}" readonly="">
+		<label for="idLabNotice" style="float:left; width:100%;padding-top: 5px;">포인트</label>
+		{{?it.user.viewok=='ok'}}
+		<input id="point0" name="point0" type="text" style="float: left; width: 100%; margin-bottom:5px;" value="{{=it.user.results.point}}" onkeypress="return isNumberKey1(event)">
+		{{??}}
+		<input id="point0" name="point0" type="text" style="float: left; width: 100%; margin-bottom:5px;" value="{{=it.user.results.point}}" readonly="">
+		{{?}}
+		<label for="idLabNotice" style="float:left; width:100%;padding-top: 5px;">보유머니</label>
+		{{?it.user.viewok=='ok'}}
+		<input id="balance0" name="balance0" type="text" style="float: left; width: 45%; margin-bottom:5px;" value="{{=it.user.results.balance_satoshis}}" onkeypress="return isNumberKey(event)">
+		{{??}}
+		<input id="balance0" name="balance0" type="text" style="float: left; width: 45%; margin-bottom:5px;" value="{{=it.user.results.balance_satoshis}}" readonly="">
+		{{?}}
+		
+		<input id="idCloseAccountInfo" class="button secondary left" type="button" value="베팅내역" style="margin-left:8px; width:25%;" onclick="viewBetting('{{=it.user.results.username}}');">
+		<input id="idCloseAccountInfo" class="button secondary left" type="button" value="입출금내역" style="margin-left:8px; width:25%;" onclick="viewIOInfo('{{=it.user.results.id1}}');">
+	{{?}}
+	<input id="idCloseAccountInfo" class="button secondary right" type="button" value="닫기" style="margin-left:5px;" onclick="document.getElementById(&#39;idDivUserInfo&#39;).style.display = &#39;none&#39;;">
+	
+	{{?it.user.viewok=='ok'}}
+	<input id="idCloseAccountInfo" class="button secondary right" type="button" value="저장" onclick="saveBalance({{=it.user.results.id1}})">
+	{{?}}
+</div>
+<script>
+function isNumberKey(evt) { 
+		document.getElementById('balance0').addEventListener("input", function () {
+			var money = document.getElementById('balance0').value.replace(/,/g, ''); 
+			money = money.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"); 
+			document.getElementById('balance0').value = money; 
+		});
+		var charCode = (evt.which) ? evt.which : event.keyCode; 
+		if (charCode > 31 && (charCode < 48 || charCode > 57)) return false; 
+		return true; 
+	};
+	function isNumberKey1(evt) { 
+		document.getElementById('point0').addEventListener("input", function () {
+			var money = document.getElementById('point0').value.replace(/,/g, ''); 
+			money = money.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"); 
+			document.getElementById('point0').value = money; 
+		});
+		var charCode = (evt.which) ? evt.which : event.keyCode; 
+		if (charCode > 31 && (charCode < 48 || charCode > 57)) return false; 
+		return true; 
+	};
+
+</script>

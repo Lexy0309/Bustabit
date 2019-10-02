@@ -1,0 +1,220 @@
+<script src="/css/jquery-1.10.1.min.js"></script>
+<script src="/css/jquery-ui.js"></script>
+<script src="/css/pagination.js"></script>
+<script type="text/javascript">
+$( document ).ready(function() {
+	var total = 1;
+	total = Number($('#total').val());
+	page = Number($('#page1').val());
+	if(total) {
+		GetPageValue(total, page, 'admin-virUser');
+	}
+});
+function isNumberKey(evt) { 
+	document.getElementById('balance_satoshis').addEventListener("input", function () {
+		var money = document.getElementById('balance_satoshis').value.replace(/,/g, '');
+		money = money.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"); 
+		document.getElementById('balance_satoshis').value = money; 
+	});
+	var charCode = (evt.which) ? evt.which : event.keyCode; 
+	if (charCode > 31 && (charCode < 48 || charCode > 57)) return false; 
+	return true; 
+};
+function isNumberKey1(evt, uid) { 
+	var id = 'balance_' + uid;
+	document.getElementById(id).addEventListener("input", function () {
+		var money = document.getElementById(id).value.replace(/,/g, '');
+		money = money.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"); 
+		document.getElementById(id).value = money; 
+	});
+	var charCode = (evt.which) ? evt.which : event.keyCode; 
+	if (charCode > 31 && (charCode < 48 || charCode > 57)) return false; 
+	return true; 
+};
+function isNumberKey2(evt, uid) { 
+	var id = 'betsize_' + uid;	
+	document.getElementById(id).addEventListener("input", function () {
+		var money = document.getElementById(id).value.replace(/,/g, '');
+		money = money.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"); 
+		document.getElementById(id).value = money; 
+	});
+	var charCode = (evt.which) ? evt.which : event.keyCode; 
+	if (charCode > 31 && (charCode < 48 || charCode > 57)) return false; 
+	return true; 
+};
+
+function modifyMoney(uId){
+	var id =  'balance_' + uId;
+	var currentMoney = Number(document.getElementById(id).value.replace(/,/g, ''));
+	page = Number($('#page1').val());
+	$.ajax({
+		url: "./update_balance",
+		type: "POST",
+		data: {id: uId,
+			   balance: currentMoney },
+		success: function(data) {
+			alert('수정되었습니다.');
+			Search(1);
+		}
+    });
+}
+function modifyBet(uId){
+	var id = 'betsize_'+ uId;
+	var currentMoney = Number(document.getElementById(id).value.replace(/,/g, ''));
+	page = Number($('#page1').val());
+	$.ajax({
+		url: "./update_betsize",
+		type: "POST",
+		data: {id: uId,
+			   betsize: currentMoney },
+		success: function(data) {
+			alert('수정되었습니다.');
+			Search(1);
+		}
+    });
+}
+function modifyBetval(uId){
+	var id = 'betval_'+ uId;
+	var currentMoney = Number(document.getElementById(id).value.replace(/,/g, ''));
+	page = Number($('#page1').val());
+	$.ajax({
+		url: "./update_betval",
+		type: "POST",
+		data: {id: uId,
+			   betval: currentMoney },
+		success: function(data) {
+			alert('수정되었습니다.');
+			Search(1);
+		}
+    });
+}
+function modifyGameLog(uId, page){
+	var id = uId;
+	$.ajax({
+		url: "./update_gamelog",
+		type: "POST",
+		data: {id: uId,
+			   page: page},
+		success: function(data) {
+			$("#result").html(data);
+		}
+    });
+}
+
+function Delete(uId){
+	if(!confirm("정말로 삭제하시겠습니까?")) return;
+	location.href = '/admin-vUser-delete?uId=' + uId;
+}
+function SelectHistoryAll() {  
+	var chks = document.getElementsByName('chkbox'); 
+	var isNeedUncheck = true; 
+	for (var i = 0; i < chks.length; i++) { 
+		if (!chks[i].checked) { 
+			isNeedUncheck = false; 
+			break; 
+		} 
+	} 
+	if (isNeedUncheck == true) { 
+		document.getElementById('idChkAll').checked = false; 
+		for (var i = 0; i < chks.length; i++) chks[i].checked = false; 
+	} 
+	else { 
+		document.getElementById('idChkAll').checked = true; 
+		for (var i = 0; i < chks.length; i++) chks[i].checked = true; 
+	} 
+}
+function betCancel() {
+	 var chks = document.getElementsByName('chkbox');
+	 var deleteCount = 0; 
+	 var deleteIndex;
+	 for (var i = 0; i < chks.length; i++) { 
+		 if (chks[i].checked == true) deleteCount++; 
+	 } 
+	 if (deleteCount == 0) { 
+		 alert('선택한 내역이 없습니다'); return; 
+	 }  
+	 if (!confirm('선택된 내역을 배팅설정 하시겠습니까?')) return;
+	 for (var i = 0; i < chks.length; i++) { 
+		 if (chks[i].checked == true) {
+			 deleteIndex = chks[i].id.replace('idChkData_', '');
+			 $.ajax({
+				url: "./cancel-bet-vUser",
+				type: "POST",
+				data: {dataIndex : deleteIndex},
+				success: function(data) {
+					Search(1);
+				}
+			});
+		 } 
+	} 
+}
+
+</script>
+
+	<input type="hidden" name="page1" id="page1" value ="{{=it.user.page}}"/>
+		<table class="leaders">
+			<thead>
+				<tr>
+					<td style="width:5%;">
+						<input id="idChkAll" type="checkbox" onclick="SelectHistoryAll();">
+					</td>
+					<td style="width:10%;">유저이름</td>
+					<td style="width:10%;">보유머니</td>
+					<td style="width:10%;">배팅금액</td>
+					<td style="width:10%;">배팅값</td>
+					<td style="width:5%;">배팅참가</td>
+					<td style="width:10%;">머니수정</td>
+					<td style="width:10%;">배팅금수정</td>
+					<td style="width:10%;">배팅값수정</td>
+					<td style="width:10%;">배팅내역수정</td>
+					<td style="width:10%;">삭제</td>
+				</tr>
+			</thead>
+				{{?it.user.results.length > 0}}
+				<tbody>
+					{{~it.user.results : result:index}}
+					<tr>
+						<td style="width:5%;"><input id="idChkData_{{=result.id}}" name="chkbox" type="checkbox"></td>
+						<td style="width:10%;">{{=result.username}}</td>
+						<td style="width:10%; text-align:left;">
+							<input id="balance_{{=result.id}}" name = "balance" style="height:37px; padding:2px;" type = "text" onkeypress="return isNumberKey1(event, {{=result.id}})" value = "{{=result.balance_satoshis}}">
+						</td>
+						<td style="width:10%; text-align:left;">
+							<input id="betsize_{{=result.id}}" name = "betsize" style="height:37px; padding:2px;" type="text" onkeypress="return isNumberKey2(event, {{=result.id}})" value = "{{=result.virbetsize}}">
+						</td>
+						<td style="width:10%; text-align:left;">
+							<input id="betval_{{=result.id}}" name = "betval" style="height:37px; padding:2px;" type="text" value = "{{=result.virbetval}}">
+						</td>
+						{{?result.betIsOk == 0}}
+							<td style="width:5%;">참가</td>
+						{{??}}
+							<td style="width:5%;">취소</td>
+						{{?}}
+						<td style="width:10%;">
+							<input type="submit" class="button" style="padding:1px;" value="머니수정" onclick="modifyMoney(&#39;{{=result.id}}&#39;)">
+						</td>
+						<td style="width:10%;">
+							<input type="submit" class="button" style="padding:1px;" value="배팅금수정" onclick="modifyBet(&#39;{{=result.id}}&#39;)">
+						</td>
+						<td style="width:10%;">
+							<input type="submit" class="button" style="padding:1px;" value="배팅값수정" onclick="modifyBetval(&#39;{{=result.id}}&#39;)">
+						</td>
+						<td style="width:10%;">
+							<input type="submit" class="button" style="padding:1px;" value="게임내역수정" onclick="modifyGameLog(&#39;{{=result.id}}&#39;)">
+						</td>
+						<td style="width:10%;">
+							<input type="submit" class="button" style="padding:2px; white-space:normal; background-color:#EB2946" value="삭제" onclick="Delete(&#39;{{=result.id}}&#39;)">
+						</td>
+						
+
+						<input type="hidden" name="total" id="total" value ="{{=result.total_count}}"/>
+					</tr>
+					{{~}}
+				</tbody>
+				{{?}}	
+		</table>
+		<div id="idDivPage" style="width: 100%; height: 30px; text-align: center;"></div>
+<style>
+	.pageButton { float: left; padding: 0px 10px; } .selectPageColor { color: #0078a0; }
+</style>
+

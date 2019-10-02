@@ -1,0 +1,217 @@
+<header>
+    <nav id="top-bar">
+
+        <div class="title">
+			{{?it.user && it.user.admin == true}}
+				<h1>ML</h1>
+			{{??}}
+				<a href="/">
+					<h1>ML</h1>
+				</a>
+			{{?}}
+        </div>
+
+        <div class="user-login">
+            {{?it.user}}
+            <div class="balance-bits">
+                <span>KRW: </span>
+                <span class="balance">{{=it.user.balance_satoshis}}</span>
+            </div>
+			{{?it.user.userclass != 'admin'}}
+			<div class="balance-bits">
+                <span>P: </span>
+                <span class="balance">{{=it.user.point}}</span>
+				<input type="hidden" name="point" id="point" value ="{{=it.user.point}}"/>
+            </div>
+			<div class="logout">
+                <input type="submit" style="background-color:#008cba; border-style: solid; border-width:0px;"  value="P전환" onclick="changePoint(&#39;{{=it.user.id}}&#39;)">
+				<!--<a href="/logout">P전환</a>-->
+            </div>
+			{{?}}
+            <div class="username">
+                <a href="">{{=it.user.username}}</a>
+            </div>
+			 <div class="logout">
+                <a href="/logout">로그아웃</a>
+            </div>
+            {{??}}
+			<div class="register">
+                <a href="/register">회원가입</a>
+            </div>
+            <div class="login">
+                <a href="/login">로그인</a>
+            </div>
+
+            {{?}}
+        </div>
+		
+        <div class="menu" style="margin-right:1rem;">
+			
+			{{?it.user && it.user.userclass == 'admin'}}
+				<ul class="nav-list" >
+					<li class="nav-item"><a href="/play">게임</a></li>
+					{{?it.user.logcnt}}
+					<li class="nav-item" style="padding-right:0px;"><a href="/admin-user">회원/접속자</a></li>
+					{{??}}
+					<li class="nav-item"><a href="/admin-user">회원/접속자</a></li>
+					{{?}}
+					<div class="unread_dot4 dot_memo font_tiny bold" style="padding:5px;">
+						<span class="new_user"></span>
+					</div>
+					<li class="nav-item"><a href="/admin-partner">총판관리</a></li>
+					<li class="nav-item"><a href="/admin-todaymoney">통계및정산</a></li>
+					<li class="nav-item"><a href="/admin-virUser">가상유저</a></li>
+					<li class="nav-item"><a href="/admin-maxprofit">설정</a></li>
+					<li class="nav-item"><a href="/admin-account">계정관리</a></li>
+					<li class="nav-item"><a href="/admin-badip">IP차단</a></li>
+					{{?it.user.unread_charge || it.user.unread_exchange}}
+					<li class="nav-item" style="padding-right:0px;"><a href="/admin-money-charge">충환전</a></li>
+					{{??}}
+					<li class="nav-item"><a href="/admin-money-charge">충환전</a></li>
+					{{?}}
+					<div class="unread_dot1 dot_memo font_tiny bold" style="padding:5px;">
+						<span class="unread_charge"></span>
+					</div>
+					<li class="nav-item" style="pdding-right:1rem;"><a href="/admin-notice">공지</a></li>
+					<li class="nav-item" style="pdding-right:1rem;"><a href="/admin-memo">쪽지함</a></li>
+					<li class="nav-item" style="padding-right:0px;"><a href="/admin-qna">1:1문의</a></li>
+					<div class="unread_dot2 dot_memo font_tiny bold" style="padding:5px;">
+						<span class="unread_qna"></span>
+					</div>
+					<li class="nav-item"><a href="/admin-qna"></a></li>			
+				</ul>	
+			{{??it.user && it.user.userclass == 'distributor'}}
+				<ul class="nav-list">
+					<li class="nav-item"><a href="/play">게임</a></li>
+					<li class="nav-item"><a href="/admin-user">회원/접속자관리</a></li>
+					<li class="nav-item"><a href="/admin-partner">파트너관리</a></li>
+					<li class="nav-item"><a href="/admin-todaymoney">통계 및 정산</a></li>
+					<li class="nav-item"><a href="/admin-money-charge">충환전</a></li>
+				</ul>
+			{{??it.user && it.user.userclass == 'partner'}}
+				<ul class="nav-list">
+					<li class="nav-item"><a href="/play">게임</a></li>
+					<li class="nav-item"><a href="/admin-user">회원/접속자관리</a></li>
+					<li class="nav-item"><a href="/admin-todaymoney">통계 및 정산</a></li>
+					<li class="nav-item"><a href="/admin-money-charge">충환전</a></li>
+				</ul>
+			{{??}}
+				<ul class="nav-list">
+					<li class="nav-item"><a href="/play">게임</a></li>
+					<li class="nav-item"><a href="/money-charge">충환전</a></li>
+					{{?it.user}}
+					<li class="nav-item"><a href="/user/{{=it.user.username}}">베팅내역</a></li>
+					{{??}}
+					<li class="nav-item"><a href="/login">베팅내역</a></li>
+					{{?}}
+					<li class="nav-item"><a href="/leaderboard">랭킹</a></li>
+					<li class="nav-item"><a href="/notice-list">공지</a></li>
+					{{?it.user && it.user.unread_count == 0 || !it.user}}
+					<li class="nav-item"><a href="/memo-list">쪽지함</a></li>
+					{{??}}
+					<li class="nav-item" style="padding-right:0px;"><a href="/memo-list">쪽지함</a></li>
+					{{?}}
+					<div class="unread_dot dot_memo font_tiny bold" style="padding:5px;">
+						<span class="unread_text"></span>
+					</div>
+					{{?it.user && it.user.unread_rpy == 0 || !it.user}}
+					<li class="nav-item"><a href="/qna-list">1:1문의</a></li>
+					{{??}}
+					<li class="nav-item" style="padding-right:0px;"><a href="/qna-list">1:1문의</a></li>
+					{{?}}
+					<div class="unread_dot3 dot_memo font_tiny bold" style="padding:5px;">
+						<span class="unread_rpy"></span>
+					</div>
+					<li class="nav-item"><a href="/faq">가이드</a></li>
+				</ul>
+			{{?}}
+        </div>
+
+	
+    </nav>
+</header>
+{{?it.user && it.user.admin == true}}
+	<input type="hidden" name="unread_charge" id="unread_charge" value ="{{=it.user.unread_charge}}"/>
+	<input type="hidden" name="unread_exchange" id="unread_exchange" value ="{{=it.user.unread_exchange}}"/>
+	<input type="hidden" name="unread_qna" id="unread_qna" value ="{{=it.user.unread_qna}}"/>
+	<input type="hidden" name="new_user" id="new_user" value ="{{=it.user.logcnt}}"/>
+{{?}}
+{{?it.user}}
+	<input type="hidden" name="unread_count" id="unread_count" value ="{{=it.user.unread_count}}"/>
+	<input type="hidden" name="unread_rpy" id="unread_rpy" value ="{{=it.user.unread_rpy}}"/>
+{{?}}
+<script>
+	$( document ).ready(function() {
+		unread_count = Number($('#unread_count').val());
+		unread_charge = Number($('#unread_charge').val())+ Number($('#unread_exchange').val());
+		unread_qna = Number($('#unread_qna').val());
+		unread_rpy = Number($('#unread_rpy').val());
+		new_user = Number($('#new_user').val());
+
+		if(unread_count) set_unread_count(unread_count);
+		if(unread_charge) set_unread_charge(unread_charge);
+		if(unread_qna) set_unread_qna(unread_qna);
+		if(unread_rpy) set_unread_reply(unread_rpy);
+		if(new_user) set_new_user(new_user);
+	});
+	function set_unread_count(unread_count) {
+		if(unread_count == 0 || unread_count < 0) {
+			$(".unread_text").text('');	
+			$(".unread_dot").css('display','none');
+		}
+		else {
+			if(unread_count > 99) unread_count = 99;
+			new Audio('/sounds/gong.mp3').play();
+			$(".unread_text").text(unread_count);	
+			$(".unread_dot").css('display','inline');
+		}
+	}
+	function set_unread_qna(unread_count) {
+		if(unread_count == 0 || unread_count < 0) {
+			$(".unread_qna").text('');	
+			$(".unread_dot2").css('display','none');
+		}
+		else {
+			if(unread_count > 99) unread_count = 99;
+			new Audio('/sounds/gong.mp3').play();
+			$(".unread_qna").text(unread_count);	
+			$(".unread_dot2").css('display','inline');
+		}
+	}
+	function set_unread_charge(unread_count) {
+		if(unread_count == 0 || unread_count < 0) {
+			$(".unread_charge").text('');	
+			$(".unread_dot1").css('display','none');
+		}
+		else {
+			if(unread_count > 99) unread_count = 99;
+			new Audio('/sounds/gong.mp3').play();
+			$(".unread_charge").text(unread_count);	
+			$(".unread_dot1").css('display','inline');
+		}
+	}
+	function set_unread_reply(unread_count) {
+		if(unread_count == 0 || unread_count < 0) {
+			$(".unread_rpy").text('');	
+			$(".unread_dot3").css('display','none');
+		}
+		else {
+			if(unread_count > 99) unread_count = 99;
+			new Audio('/sounds/gong.mp3').play();
+			$(".unread_rpy").text(unread_count);	
+			$(".unread_dot3").css('display','inline');
+		}
+	}
+	function set_new_user(unread_count) {
+		if(unread_count == 0 || unread_count < 0) {
+			$(".new_user").text('');	
+			$(".unread_dot4").css('display','none');
+		}
+		else {
+			if(unread_count > 99) unread_count = 99;
+			new Audio('/sounds/gong.mp3').play();
+			$(".new_user").text(unread_count);	
+			$(".unread_dot4").css('display','inline');
+		}
+	}
+</script>

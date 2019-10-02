@@ -1,0 +1,151 @@
+<input type="hidden" name="page" id="page" value ="{{=it.user.page}}"/>
+<div style="border: 1px solid #DDDDDD; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); padding: 5px;">
+		<label for="idLabAccount">
+			<span style="font-size: 14px; font-weight: bold;">합계: {{?it.user.results.length> 0}}{{=it.user.results[0].totalout}}{{??}}0{{?}}
+		</label>
+</div>
+<div style="margin-top:10px;"></div>
+<table class="leaders">
+	<thead>
+		<tr>
+			<td style="width:10%;">환전상태</td>
+			<td style="width:10%;">사용자명</td>
+			<td style="width:10%;">금액</td>
+			<td style="width:10%;">은행명</td>
+			<td style="width:10%;">예금주</td>
+			<td style="width:10%;">계좌번호</td>
+			{{?it.user.userclass=='admin'}}
+			<td style="width:10%;">요청날짜</td>
+			<td style="width:10%;">완료날짜</td>
+			<td style="width:20%;">처리</td>
+			{{??}}
+			<td style="width:10%;">날짜</td>
+			{{?}}
+		</tr>
+	</thead>
+	{{?it.user.results.length > 0}}
+	<tbody>
+		{{~it.user.results : result:index}}
+		<tr>
+			<td style="width:10%;">{{=result.pay_state}}</td>
+			<td style="width:10%;"><a onclick="viewDetail('{{=result.username}}')">{{=result.username}}</td>
+			<td style="width:10%; text-align:left;">{{=result.balance}}</td>
+			<td style="width:10%;">{{=result.bankindex}}</td>
+			<td style="width:10%;">{{=result.deposit_name}}</td>
+			<td style="width:10%;">{{=result.accountnum}}</td>
+			{{?it.user.userclass=='admin'}}
+			<td style="width:10%;">{{=result.request_datetime}}</td>
+			<td style="width:10%;">
+				{{?result.end_datetime != null}}
+					{{=result.end_datetime}}
+				{{?}}</td>
+			<td style="width:20%;">
+				{{?result.pay_state == '요청'}}
+					<input type="submit" class="button" style="width:calc((100%-5px)/3);height:30px;padding:2px; white-space:normal; background-color:#E88080;" value="승인" onclick="Approval(&#39;{{=result.id}}&#39;, &#39;{{=result.balance}}&#39;)"> <input type="submit" class="button " style="width:calc((100%-5px)/3);height:30px;padding:2px; white-space:normal; background-color:#F3962F;" value="보류" onclick="Defer(&#39;{{=result.id}}&#39;, &#39;{{=result.balance}}&#39;)"> <input type="submit" class="button" style="width:calc((100%-5px)/3);height:30px;padding:2px; white-space:normal;" value="거부" onclick="Refuse(&#39;{{=result.id}}&#39;, &#39;{{=result.balance}}&#39;)">
+				{{??result.pay_state == '보류'}}
+					<input type="submit" class="button" style="width:calc((100%-5px)/3);height:30px;padding:2px; white-space:normal; background-color:#E88080;" value="승인" onclick="Approval(&#39;{{=result.id}}&#39;, &#39;{{=result.balance}}&#39;)"> <input type="submit" class="button" style="width:calc((100%-5px)/3);height:30px;padding:2px; white-space:normal;" value="거부" onclick="Refuse(&#39;{{=result.id}}&#39;, &#39;{{=result.balance}}&#39;)">
+				{{?}}
+			</td>
+			{{??}}
+			<td style="width:10%;">
+				{{?result.end_datetime != null}}
+					{{=result.end_datetime}}
+				{{??}}
+					{{=result.request_datetime}}
+				{{?}}
+			</td>
+			{{?}}
+			<input type="hidden" name="total" id="total" value ="{{=result.total_count}}"/>
+		</tr>
+		{{~}}
+	</tbody>
+	{{?}}
+</table>
+
+<div id="idDivUserInfo" style="position: fixed; display: none;"></div>
+
+	<!-- 페이지 컨트롤 -->
+<style>
+	.pageButton { float: left; padding: 0px 10px; } .selectPageColor { color: #0078a0; }
+</style>
+<div id="idDivPage" style="width: 100%; height: 30px; text-align: center;"></div>
+<script src="/css/jquery-1.10.1.min.js"></script>
+<script src="/css/jquery-ui.js"></script>
+<script src="/css/pagination.js"></script>
+<script>
+$( document ).ready(function() {
+	var total = 1;
+	total = Number($('#total').val());
+	page = Number($('#page').val());
+	if(total) {
+		GetPageValue(total, page, 'admin-exchange-result');
+	}
+});
+
+var page = document.getElementById('page').value;
+function Approval(moneyId, balance){
+	var money = balance.replace(/,/g, '');
+	if (!confirm("환전 승인을 하시겠습니까?")) return;
+	$.ajax({
+		url: "./money-exchange-approval",
+		type: "POST",
+		data: {moneyId: moneyId,
+			   money:   money},
+		success: function(data) {
+			location.href = '/admin-money-exchange?button=ok';
+		}
+	});
+}
+function Defer(moneyId, balance){
+	var money = balance.replace(/,/g, '');
+	if (!confirm("환전 보류를 하시겠습니까?")) return;
+	$.ajax({
+		url: "./money-exchange-defer",
+		type: "POST",
+		data: {moneyId: moneyId,
+			   money:   money},
+		success: function(data) {
+			location.href = '/admin-money-exchange?button=ok';
+		}
+	});
+}
+function Refuse(moneyId, balance){
+	
+	var money = balance.replace(/,/g, '');
+	if (!confirm("환전 거부를 하시겠습니까?")) return;
+	$.ajax({
+		url: "./money-exchange-refuse",
+		type: "POST",
+		data: {moneyId: moneyId,
+		       money:   money},
+		success: function(data) {
+			location.href = '/admin-money-exchange?button=ok';
+		}
+	});
+}
+function viewBetting(username) {
+	location.href='/user/'+username;
+}
+function viewIOInfo(uid) {
+	location.href='/viewInOutput?uid='+uid;
+}
+function viewDetail(username) {
+	$.ajax({
+		url: "./user_datail",
+		type: "POST",
+		data: {	
+			username: username,
+			urlname: 'charge'
+		},
+		success: function(data) {
+			$("#idDivUserInfo").html(data);
+			if (document.getElementById('idDivUserInfo').style.display == 'none') {	
+				document.getElementById('idDivUserInfo').style.top = (window.innerHeight / 2 - 250).toString() + 'px'; 
+				document.getElementById('idDivUserInfo').style.left = (window.innerWidth / 2 - 230).toString() + 'px'; 
+				document.getElementById('idDivUserInfo').style.display = 'block'; 
+				setTimeout(function () { if (document.getElementById('idDivUserInfo').style.display = 'block') { document.getElementById('idDivUserInfo').style.display = 'none'; } }, 300 * 1000); 
+			}
+		}
+	});
+}
+</script>

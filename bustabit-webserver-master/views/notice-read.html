@@ -1,0 +1,36 @@
+{{##def.page_title = '공지사항' #}}
+
+{{##def.content:
+<script>
+$( document ).ready(function() {
+	document.getElementById('idContent').value = decodeURIComponent(document.getElementById('pid').value);
+});
+</script>
+<div class="content row panel radius">
+	<h5>공지사항</h5> 
+	<hr>
+	<input type="hidden" name="pid" id="pid" value="{{=it.user.content.content}}"/>
+	<table class="leaders">
+		<thead>
+			<tr>
+				<td style="width:80%; text-align:left;">
+					<p><span style="font-size: 20px"><b><span style="color: #ff8000">MaxLine</span>{{=it.user.content.subject}}</b>
+						</span>
+					</p>
+				</td>
+				<td style="width:20%;">관리자</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>
+					<textarea rows="2" id="idContent" cols="20" style="min-height:150px; width:100%; border:0px;box-shadow:none;"  wrap="hard" readonly=""></textarea>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<input id="idOpenList" class="button secondary left" type="button" value="목록" onclick="location.href = &#39;/notice-list&#39;">
+</div>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

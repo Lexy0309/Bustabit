@@ -1,0 +1,47 @@
+{{##def.page_title = 'Security Settings' #}}
+{{##def.content:
+<script type="text/javascript">
+    window.onload = function () {
+        if (document.getElementById('confirmation') !== null) {
+            document.getElementById('confirmation').onchange = validatePassword;
+            document.getElementById('password').onchange = validatePassword;
+        }
+    };
+    function validatePassword() {
+        var password = document.getElementById('password').value;
+        var confirm = document.getElementById('confirmation').value;
+        if (password != confirm) {
+            document.getElementById('confirmation').setCustomValidity("Confirmation and password should be the same");
+        } else document.getElementById("confirmation").setCustomValidity('');
+    }
+    function logout() {
+        if (document.getElementById('logout') ) {
+            if (confirm("Are you sure you want to log out?")) {
+                document.getElementById("logout").submit();
+            }
+        }
+    }
+</script>
+<div class="content row panel radius">
+    <div class="settings">
+        <div class="small-14 columns sets-content">
+            <h5>비밀번호 변경</h5>
+            <form action="reset-password" method="post" >
+                <label for="old_password">비밀번호</label>
+                <input name="old_password" type="password" id="old_password" autocomplete="off" required/>
+                {{?it.user.mfa_secret}}
+                    <label>2FA Code
+                        <input name="otp" type="text" pattern="[0-9]{6}" required />
+                    </label>
+                {{?}}
+                <label for="password">새 비밀번호</label>
+                <input name="password" type="password" id="password" pattern=".{7,50}" required/>
+                <label for="confirmation">비밀번호 확인</label>
+                <input name="confirmation" type="password" id="confirmation" pattern=".{7,50}" required/>
+                <input type="submit" class="border-button blue right" value="변경"/>
+            </form>
+        </div>
+    </div>
+</div>
+#}}
+{{#def.include('./template/main_new')}}

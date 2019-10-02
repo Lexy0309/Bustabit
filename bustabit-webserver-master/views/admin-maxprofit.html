@@ -1,0 +1,112 @@
+{{##def.page_title = 'max profit' #}}
+
+{{##def.content:
+<script>
+function isNumberKey(evt) { 
+	document.getElementById('profit').addEventListener("input", function () {
+		var money = document.getElementById('profit').value.replace(/,/g, '');
+		money = money.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"); 
+		document.getElementById('profit').value = money; 
+	});
+	var charCode = (evt.which) ? evt.which : event.keyCode; 
+	if (charCode > 31 && (charCode < 48 || charCode > 57)) return false; 
+	return true; 
+};
+function Calculate(){
+	var currentMoney = Number(document.getElementById('profit').value.replace(/,/g, ''));
+	$.ajax({
+		url: "./admin-modify-max",
+		type: "POST",
+		data: {money: currentMoney},
+		success: function(data) {
+			alert('성공되었습니다.');
+			
+		}
+	});
+}
+function Register_Bonus(){
+	var join_first = Number(document.getElementById('join_first').value);
+	var real_first = Number(document.getElementById('real_first').value);
+	var real_charge = Number(document.getElementById('real_charge').value);
+	$.ajax({
+		url: "./admin_register_bonus",
+		type: "POST",
+		data: {
+			join_first: join_first,
+			real_first: real_first,
+			real_charge: real_charge},
+		success: function(data) {
+			alert('성공되었습니다.');
+			
+		}
+	});
+}
+function Register_Exchange(){
+	var game_play = Number(document.getElementById('game_play').value);
+	var exchange_time = Number(document.getElementById('exchange_time').value);
+	$.ajax({
+		url: "./admin_register_exchange",
+		type: "POST",
+		data: {game_play: game_play,
+			   exchange_time: exchange_time},
+		success: function(data) {
+			alert('성공되었습니다.');
+			
+		}
+	});
+}
+</script>
+<div class="content row panel radius">
+	<div style="float: left; width: calc(100% - 5px);">
+		<label for="idLabNotice" style="padding:5px;display:inline;">Max profit</label>
+		<input id="profit" name="profit" style="width:calc(100% - 5px); height:37px; display:inline; padding:5px; white-space: normal; margin-right:5px;text-align:right;" type="text" value="" onkeypress="return isNumberKey(event)">
+		<input id="idChargeMoney" class="light-button right" style=" width: 15%; height: 37px; padding: 5px;" type="button" value="확인" onclick="Calculate();">
+	</div>
+	<h5>보너스 머니 설정</h5>
+	 <hr>
+	<table class="leaders">
+		<thead>
+			<tr>
+				<td style="width:25%;">가입 첫 충전 설정</td>
+				<td style="width:25%;">실시간 첫 충전</td>
+				<td style="width:25%;">실시간 충전</td>
+				<td style="width:25%;">확인</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td style="width:25px;">충전금액의 <input type="text" id="join_first" name="join_first" value="{{?it.user.bresult}}{{=it.user.bresult.join_first}}{{?}}">%</td>
+				<td style="width:25px;">충전금액의 <input type="text" id="real_first" name="real_first" value="{{?it.user.bresult}}{{=it.user.bresult.real_first}}{{?}}">%</td>
+				<td style="width:25px;">충전금액의 <input type="text" id="real_charge" name="real_charge" value="{{?it.user.bresult}}{{=it.user.bresult.real_charge}}{{?}}">%</td>
+				<td style="width:25px;">
+					<input type="submit" class="button" style="padding:2px; white-space:normal; background-color:#EB2946" value="확인" onclick="Register_Bonus()">
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<h5>환전 설정</h5>
+	 <hr>
+	<table class="leaders">
+		<thead>
+			<tr>
+				<td style="width:30%;">게임 풀레이 롤링 조건</td>
+				<td style="width:30%;">연속 환전신청 가능한 시간</td>
+				<td style="width:40%;">확인</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td style="width:30px;"><input type="text" id="game_play" name="game_play" value="{{?it.user.eresult}}{{=it.user.eresult.game_play}}{{?}}">%</td>
+				<td style="width:30px;"><input type="text" id="exchange_time" name="exchange_time" value="{{?it.user.eresult}}{{=it.user.eresult.exchange_time}}{{?}}">%</td>
+				<td style="width:40px;">
+					<input type="submit" class="button" style="padding:2px; white-space:normal; background-color:#EB2946" value="확인" onclick="Register_Exchange()">
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+</div>
+#}}
+
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

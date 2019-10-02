@@ -1,0 +1,36 @@
+<input type="hidden" name="state" id="state" value ="{{=it.user.state}}"/>
+<table class="leaders">
+	<thead>
+		<tr>
+			<td style="width:20%;">구분</td>
+			<td style="width:20%;">금액</td>
+			<td style="width:20%;">상태</td>
+			<td style="width:20%;">날짜</td>
+			<td style="width:20%;">삭제</td>
+		</tr>
+	</thead>
+	{{?it.user.moneys.length > 0}}
+	<tbody>
+		{{~it.user.moneys : money:index}}
+		<tr>
+			<td style="width:20%;">환전</td>
+			<td style="width:20%; text-align:left;">-{{=money.balance}}</td>
+			{{?money.pay_state == '보류'}}
+				<td style="width:20%;">요청</td>
+			{{??}}
+				<td style="width:20%;">{{=money.pay_state}}</td>
+			{{?}}
+			<td style="width:20%;">{{=money.datetime}}</td>
+			{{?money.pay_state == '승인' || money.pay_state == '거부'}}
+			<td style="width:20%;">
+				<input type="submit" class="button" style="padding:2px; white-space:normal; background-color:#EB2946;" value="삭제" onclick="DeleteHistory(&#39;{{=money.id}}&#39;)">
+			</td>
+			{{??}}
+				<td style="width:20%;"></td>
+			{{?}}
+			<input type="hidden" name="total" id="total" value ="{{=money.total_count}}"/>
+		</tr>
+		{{~}}
+	</tbody>
+	{{?}}
+</table>

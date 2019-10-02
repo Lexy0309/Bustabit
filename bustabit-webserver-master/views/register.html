@@ -1,0 +1,225 @@
+{{##def.page_title = 'Register' #}}
+
+{{##def.content:
+<script type="text/javascript">
+		var submitEnabled = true;
+		function enableSubmit() {
+			submitEnabled = true;
+      var s = document.getElementById('registerSubmit');
+      s.style.display = 'block';
+    }
+
+    window.onload = function () {
+        if (document.getElementById('confirmation') !== null) {
+            document.getElementById('confirmation').onchange = validatePassword;
+            document.getElementById('password').onchange = validatePassword;
+        }
+    };
+    function validatePassword() {
+        var password = document.getElementById('password').value;
+        var confirm = document.getElementById('confirmation').value;
+        if (password != confirm) {
+            document.getElementById('confirmation').setCustomValidity("비밀번호가 동일하지 않습니다.");
+        } else document.getElementById("confirmation").setCustomValidity('');
+    }
+	function checkRegisterInfo() { 
+		if (document.getElementById('depositname').value.replace(/ /gi, '') == '') { 
+			alert('예금주 성함을 입력해주세요'); return false; 
+		} 
+		if (document.getElementById('bankIndex').selectedIndex == '0') { 
+			alert('은행을 선택해주세요'); return false; 
+		}
+		if(document.getElementById('partner_auth_index1').value == '0'){
+			alert('추천코드인증이 되지 않았습니다.'); return false;
+		}
+		return true; 
+	}
+	function RequestPartnerAuth() {
+		var partner_code = document.getElementById('solecodeinput').value;
+		$.ajax({
+			url: "./request_partner_auth",
+			type: "POST",
+			data: {	
+				partner_code: partner_code
+			},
+			success: function(data) {
+				$("#result").html(data);
+			}
+		});
+	}
+	function RequestUsernameAuth() {
+		var username_auth = document.getElementById('username').value;
+		$.ajax({
+			url: "./request_username_auth",
+			type: "POST",
+			data: {	
+				username_auth: username_auth
+			},
+			success: function(data) {
+				$("#result1").html(data);
+			}
+		});
+	}
+</script>
+        <div class="register">
+            <form action="/register" method="post" onsubmit="return submitEnabled;">
+                <div class="row">
+                    <div class="large-7 columns input">
+                        <h5>계정 만들기 <small><a href="login">이미 계정이 있으십니까?</a></small></h5>
+                        <hr>
+                    </div>
+					
+                    <div class="large-12 columns input">
+                        <div class="row">
+							<div class="large-3 columns">
+								<label for="solecodeinput">※ 추천코드</label>
+							</div>
+							<div id="solecoded" class="large-9 columns">
+								<input id="solecodeinput" type="text" style="width:calc(100% - 125px); float:left;" value="" name="user[sub_partner_id]" autocomplete="off"  maxlength="20" required>
+								<input id="partner_auth" class="border-button right blue" type="button" style="width:115px; display: block;" value="추천코드인증" onclick="RequestPartnerAuth();">
+								
+								<input id="partner_auth_index1" type="text" name="partner_auth_index1" value="0" style="display:none;">
+								<!--<input id="solecodeinput" type="text" name="user[sub_partner_id]" value="" maxlength="20" required />-->
+							</div>
+						</div>
+					</div>
+					
+					<div class="large-12 columns input">
+                        <div class="row">
+                            <div class="large-3 columns">
+                                <label for="username">※ 사용자 계정</label>
+                            </div>
+                            <div class="large-9 columns">
+                                <input id="username" type="text" name="user[name]" style="width:calc(100% - 125px); float:left;" value="{{?it.values}}{{!it.values.name}}{{?}}" autocomplete="off" pattern="[A-Za-z0-9_\-]{3,16}" title="사용자 계정은 영문,숫자,특수문자로 구성할수 있습니다." maxlength="20" required />
+								<input id="username_auth" class="border-button right blue" type="button" style="width:115px; display: block;" value="중복체크" onclick="RequestUsernameAuth();">
+								
+                            </div>
+                        </div>
+                    </div>
+					<div class="large-12 columns input">
+                        <div class="row">
+                            <div class="large-3 columns">
+                                <label for="username">※ 이름</label>
+                            </div>
+                            <div class="large-9 columns">
+                                <input id="nameid" type="text" name="user[nameid]" value="{{?it.values}}{{!it.values.nameid}}{{?}}" autocomplete="off" maxlength="20" required />
+                            </div>
+                        </div>
+                    </div>
+
+					<!--
+                    <div class="large-7 columns input">
+
+                        <div class="row">
+                            <div class="large-3 columns">
+                                <label for="email">*Recovery Email</label>
+                            </div>
+                            <div class="large-9 columns">
+                                <input type="email" id="email" value="{{?it.values}}{{!it.values.email}}{{?}}" placeholder="you@email.com" name="user[email]" autocomplete="off"/>
+                                <small><b>* Optional</b> although we <b>strongly advise you to use one</b>, otherwise it is <b>not possible</b> to password reset!</small>
+                            </div>
+                        </div>
+                    </div>
+					-->
+                    <div class="large-12 columns input">
+                        <div class="row">
+                            <div class="large-3 columns">
+                                <label>※ 비밀번호</label>
+                            </div>
+                            <div class="large-9 columns">
+                                <input id="password" type="password" value="{{?it.values}}{{!it.values.password}}{{?}}" name="user[password]" autocomplete="off" pattern=".{7,200}" title="비밀번호는 7자 이상 사용이 가능합니다." required/>
+                                <small>비밀번호는 7자이상 사용이 가능합니다.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="large-12 columns input">
+                        <div class="row">
+                            <div class="large-3 columns">
+                                <label>※ 비밀번호 확인</label>
+                            </div>
+                            <div class="large-9 columns">
+                                <input id="confirmation" type="password" value="{{?it.values}}{{!it.values.confirm}}{{?}}" name="user[confirm]" autocomplete="off" pattern=".{7,200}" data-equal-id="password" maxlength="20" required/>
+                            </div>
+                        </div>
+                    </div>
+					<div class="large-12 columns input">
+						<div class="row">
+							<div class="large-3 columns">
+								<label>※ 휴대폰 번호</label>
+							</div>
+							<div class="large-9 columns">
+								<!--modify by lt
+								<input id="phone" type="text" style="width:calc(100% - 125px); float:left;" value="" name="user[phone]" autocomplete="off"  placeholder="예:) 010-1234-5678" maxlength="20" required="">-->
+								<input id="phone" type="text" value="" name="user[phone]" autocomplete="off" pattern="[0-9-]{11,16}" title="전화번호는 숫자,특수문자로 구성할수 있습니다.11자이상이어야 합니다."  placeholder="예:) 010-1234-5678" maxlength="18" required="">
+								<!--<input id="phone_auth" class="border-button right blue" type="button" style="width:115px; display: block;" value="인증번호받기" onclick="RequestMobileAuth();">
+								<input id="phone_auth_comp_index" type="text" name="user[phone_auth_comp_index]" style="display:none;">-->
+								<div style="clear:both;"></div> <small><span style="color:red"><b>환전신청에 사용됩니다. 정확하게 입력해주세요.</b></span></small> 
+							</div>
+						</div>
+					</div>
+					<div class="large-12 columns input">
+						<div class="row">
+							<div class="large-3 columns">
+								<label>※ 예금주 성함</label>
+							</div>
+							<div class="large-9 columns">
+								<input id="depositname" type="text" value="" name="user[deposit_name]" autocomplete="off"  placeholder="예:) 홍길동" pattern=".{2,16}" maxlength="10" required=""> <small><span style="color:red"><b>환전신청에 사용되며, 가입시 입력한 정보로 환전 됩니다. 이후 변경불가능 하니 환전계좌 예금주를 정확하게 입력해주세요.</b></span></small> 
+							</div>
+						</div>
+					</div>
+					<div class="large-12 columns input">
+						<div class="row">
+							<div class="large-3 columns">
+								<label>※ 은행</label>
+							</div>
+							<div class="large-9 columns">
+								<select id="bankIndex" name="user[bank]">
+									<option>은행을 선택해주세요</option>
+									<option>KB국민은행</option>
+									<option>신한은행</option>
+									<option>우리은행</option>
+									<option>하나은행</option>
+									<option>외환은행</option>
+									<option>한국산업은행</option>
+									<option>기업은행</option>
+									<option>수협중앙회</option>
+									<option>NH농협은행</option>
+									<option>대구은행</option>
+									<option>부산은행</option>
+									<option>광주은행</option>
+									<option>제주은행</option>
+									<option>전북은행</option>
+									<option>경남은행</option>
+									<option>산림조합</option>
+									<option>새마을금고</option>
+									<option>신용협동조합</option>
+									<option>우체국</option>
+									<option>HSBC은행</option>
+									<option>스텐다드차타드은행</option>
+									<option>한국씨티은행</option>
+									<option>저축은행</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="large-12 columns input">
+						<div class="row">
+							<div class="large-3 columns">
+								<label>※ 계좌번호</label>
+							</div>
+							<div class="large-9 columns">
+								<input id="accountnum" type="text" value="" name="user[account_num]" autocomplete="off" placeholder="계좌번호를 정확히 입력해주세요" maxlength="20" pattern="[0-9]{3,16}" title="계좌번호는 숫자로 구성할수 있습니다." required=""> <small><span style="color:red"><b>환전신청에 사용되며, 가입시 입력한 정보로 환전 됩니다. 이후 변경불가능 하니 환전계좌를 정확하게 입력해주세요.</b></span></small> 
+							</div>
+						</div>
+					</div>
+                    <div class="large-7 columns">                        
+                        <input id="registerSubmit" style="display: block" class="border-button right blue" type="submit" value="회원가입" onclick="if (!checkRegisterInfo()) return false;"/>
+                    </div>
+                </div>
+				<div id="result"></div>
+				<div id="result1"></div>
+            </form>
+        </div>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

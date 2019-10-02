@@ -1,0 +1,57 @@
+<h5>문의내용</h5> 
+<hr>
+
+<label for="idLabTitle">문의제목</label>
+<input type="text" readOnly="true" value="{{=it.user.reply.inquiry_subject}}" maxlength="50" required="">
+
+<label for="idLabContent">문의내용</label>
+<input type="hidden" name="pid" id="pid" value="{{=it.user.reply.inquiry_contents}}"/>
+<textarea id="idQna" readOnly="true" rows="2" cols="20" style="min-height:150px;" wrap="hard" ></textarea>
+<h5>답변내용</h5> 
+<hr>
+<form>
+	<input type="hidden" name="inquiry_no" id="inquiry_no" value="{{=it.user.reply.no}}" />
+	<input type="hidden" name="reply_no" id="reply_no" value="{{=it.user.reply.reply_no}}" />
+	<label for="idLabTitle">답변제목</label>
+	{{?it.user.reply.reply_subject != null}}
+		<input id="idTitle" name="idTitle" type="text" value="{{=it.user.reply.reply_subject}}" maxlength="50" required="">
+	{{??}}
+		<input id="idTitle" name="idTitle" type="text" value="" maxlength="50" required="">
+	{{?}}
+	<label for="idLabContent">답변내용</label>
+	{{?it.user.reply.reply_contents != null}}
+		<input type="hidden" name="rid" id="rid" value="{{=it.user.reply.reply_contents}}" />
+		<textarea id="idContent" name="idContent" rows="2" cols="20" style="min-height:150px;" wrap="hard" required=""></textarea>
+	{{??}}
+		<input type="hidden" name="rid" id="rid" value="" />
+		<textarea id="idContent" name="idContent" rows="2" cols="20" style="min-height:150px;" wrap="hard" required=""></textarea>
+	{{?}}
+</form>
+<div style="clear:left; text-align:center">
+	<input id="idChargeMoney" class="secondary button" style="width: 15%; height: 40px; padding: 3px; white-space: normal;" type="button" value="답변하기" onclick="reply();">
+</div>
+<input type="hidden" name="unread_qna1" id="unread_qna1" value ="{{=it.user.unread_qna}}"/>
+
+<script type="text/javascript">
+$( document ).ready(function() {
+	document.getElementById('idQna').value = decodeURIComponent(document.getElementById('pid').value);
+	document.getElementById('idContent').value = decodeURIComponent(document.getElementById('rid').value);
+});
+function reply(){
+	if ($.trim($("#reply_result [name=idContent]").val()) == "") {
+		alert("답변내용을 기입하십시요.");
+		return;
+	}
+	if ($.trim($("#reply_result [name=idTitle]").val()) == "") {
+		alert("답변제목을 기입하십시요.");
+		return;
+	}
+	var title = encodeURIComponent(document.getElementById('idTitle').value);
+	var content = encodeURIComponent(document.getElementById('idContent').value);
+	var inquiry_no = document.getElementById('inquiry_no').value;
+	var reply_no = document.getElementById('reply_no').value;
+	location.href = '/reply-insert?title=' + title + '&text=' + content + '&inquiry_no=' + inquiry_no + '&reply_no=' + reply_no; 
+}
+</script>
+
+		

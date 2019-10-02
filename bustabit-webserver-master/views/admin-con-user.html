@@ -1,0 +1,263 @@
+{{##def.page_title = '접속자목록' #}}
+
+{{##def.content:
+<script type="text/javascript">
+$( document ).ready(function() {
+	var total = 1;
+	total = Number($('#total').val());
+	page = Number($('#page').val());
+
+	var search_mode1 = $('#search_mode1').val();
+	var fromValue1 = $('#fromValue1').val();
+	if(search_mode1 == 'no') {
+		document.getElementById('search_mode').value = 0;
+		document.getElementById('fromValue').value = '';
+	}
+	else if(search_mode1 != 'no'){
+		document.getElementById('search_mode').value = search_mode1;
+		document.getElementById('fromValue').value = fromValue1;
+	}
+	if(total && search_mode1 == 'no') {
+		GetPageValue(total, page, 'admin-con-user');
+	}
+	else if(total && search_mode1 != 'no') {
+		GetPageValue(total, page, 'admin-con-user?search_mode=' + search_mode1 + '&fromValue=' + fromValue1, 'admin-con-user');
+	}
+});
+function Search(page){
+	var fromValue = document.getElementById('fromValue').value;
+	var search_mode = document.getElementById('search_mode').value;
+	location.href = '/admin-con-user?search_mode=' + search_mode + '&fromValue=' + fromValue; 
+}
+function editInfo(uid){
+	$.ajax({
+		url: "./get_user_info",
+		type: "POST",
+		data: {	
+			userid: uid
+		},
+		success: function(data) {
+			$("#idDivAccountInfo").html(data);
+			if (document.getElementById('idDivAccountInfo').style.display == 'none') {	
+				document.getElementById('idDivAccountInfo').style.top = (window.innerHeight / 2 - 370).toString() + 'px'; 
+				document.getElementById('idDivAccountInfo').style.left = (window.innerWidth / 2 - 230).toString() + 'px'; 
+				document.getElementById('idDivAccountInfo').style.display = 'block'; 
+				setTimeout(function () { if (document.getElementById('idDivAccountInfo').style.display = 'block') { document.getElementById('idDivAccountInfo').style.display = 'none'; } }, 300 * 1000); 
+			}
+			
+		}
+	});
+}
+function saveBalance(uid) {
+	var bal = Number(document.getElementById('balance0').value.replace(/,/g, ''));
+	var point = Number(document.getElementById('point0').value.replace(/,/g, ''));
+	location.href='/con_modify_balance?uid='+uid+'&balance='+bal+'&point='+point;
+}
+function viewBetting(username) {
+	location.href='/user/'+username;
+}
+function viewIOInfo(uid) {
+	location.href='/viewInOutput?uid='+uid;
+}
+function modify(){
+	var uid = document.getElementById('userid').value;
+	var phone = document.getElementById('phone1').value;
+	var password = document.getElementById('password').value;
+	var confirm = document.getElementById('confirm').value;
+	var memo = document.getElementById('memo1').value;
+	var bank = document.getElementById('bank1').value;
+	var owner = document.getElementById('owner1').value;
+	var accountnum = document.getElementById('accountnum1').value;
+	var pwd = document.getElementById('pwd').value;
+
+	if(password != pwd) {alert('비밀번호를 확인하십시오.'); return;}
+	if((password != confirm) && (confirm!='')) {alert('비밀번호가 정확치 않습니다.'); return;}
+	page = Number($('#page').val());
+	$.ajax({
+		url: "./modify_con_info",
+		type: "POST",
+		data: {	
+			password: password,
+			phone: phone,
+			memo: memo,
+			userid: uid,
+			bank: bank,
+			owner: owner,
+			accountnum: accountnum
+		},
+		success: function(data) {
+			Search(page);
+			document.getElementById('idDivAccountInfo').style.display = 'none';
+		}
+	});
+}
+function setPlay(id) {
+	page = Number($('#page').val());
+	$.ajax({
+		url: "./set_play",
+		type: "POST",
+		data: {	
+			uid: id
+		},
+		success: function(data) {
+			alert('승인되었습니다.');
+			Search(page);
+			location.href='/admin-con-user';
+		}
+	});
+}
+function chatCancel(uid) {
+	 page = Number($('#page').val());
+	
+	 $.ajax({
+		url: "./cancel-chat-user",
+		type: "POST",
+		data: {uid : uid},
+		success: function(data) {
+			Search(page);
+		}
+	});
+}
+function viewDetail(username) {
+	$.ajax({
+		url: "./user_datail",
+		type: "POST",
+		data: {	
+			username: username,
+			urlname: 'user'
+		},
+		success: function(data) {
+			$("#idDivUserInfo").html(data);
+			if (document.getElementById('idDivUserInfo').style.display == 'none') {	
+				document.getElementById('idDivUserInfo').style.top = (window.innerHeight / 2 - 250).toString() + 'px'; 
+				document.getElementById('idDivUserInfo').style.left = (window.innerWidth / 2 - 230).toString() + 'px'; 
+				document.getElementById('idDivUserInfo').style.display = 'block'; 
+				setTimeout(function () { if (document.getElementById('idDivUserInfo').style.display = 'block') { document.getElementById('idDivUserInfo').style.display = 'none'; } }, 300 * 1000); 
+			}
+		}
+	});
+}
+</script>
+
+<div class="content row panel radius">
+	<div style="border-bottom:1px solid #DDDDDD; margin-bottom:20px;">
+		<div class="tabButton" onclick="location.href = &#39;/admin-user&#39;">회원</div>
+		<div class="tabButtonSelect" onclick="location.href = &#39;/admin-con-user&#39;">접속자</div>
+		<div style="clear:both;"></div>
+	</div>
+	<div class="search">
+		<div style="float: left; width: calc(100% - 1px);">
+				<select name="search_mode" id="search_mode" style="width:calc((100% - 26px) / 11); height:37px; padding:0px; margin-right:5px;">
+						<option value="0">전체</option>
+						<option value="1">이름</option>
+						<option value="2">접속IP</option>
+						<option value="3">추천인코드</option>
+				</select>
+				<input id="fromValue" name="fromValue" style="width:calc((100% - 26px) /8); height:37px; display:inline; padding:3px; white-space: normal; margin-right:100px;" type="text" value="">
+				<input id="idChargeMoney" class="light-button" style="width: 15%; height: 40px; padding: 3px; white-space: normal;" type="button" value="검색" onclick="Search(1);">
+			</div>
+	</div>
+	<input type="hidden" name="page" id="page" value ="{{=it.user.page}}"/>
+	<input type="hidden" name="search_mode1" id="search_mode1" value ="{{=it.user.search_mode}}"/>
+	<input type="hidden" name="fromValue1" id="fromValue1" value ="{{=it.user.fromValue}}"/>
+	<table class="leaders">
+	<thead>
+		<tr>
+			<td>ID</td>
+			<td>이름</td>
+			<td>총입금</td>
+			<td>총출금</td>
+			<td>보유캐쉬</td>
+			<td>포인트</td>
+			<td>추천인코드</td>
+			<td>접속IP</td>
+			<td>가입IP</td>
+			<td>가입일시</td>
+			<td>마지막접속일</td>
+			<td>접속횟수</td>
+			{{?it.user.userclass == 'admin'}}
+			<td>게임가능</td>
+			<td>채팅금지</td>
+			<td>강퇴</td>
+			<td>문의</td>
+			{{?}}
+			<td>입출금내역</td>
+			{{?it.user.userclass == 'admin'}}
+			<td>메모</td>
+			<td>편집</td>
+			{{?}}
+		</tr>
+	</thead>
+		
+		{{?it.user.results.length > 0}}
+		<tbody>
+			{{~it.user.results : result:index}}
+			<tr>
+				<td>
+					<a  onclick="viewDetail('{{=result.username}}')">{{=result.username}}</a>
+				</td>
+				<td>{{=result.nameid}}</td>
+				<td>{{=result.totalin}}</td>
+				<td>{{=result.totalout}}</td>
+				<td>{{=result.balance}}</td>
+				<td>{{=result.point}}</td>
+				<td>{{=result.partner_code}}</td>
+				<td>{{=result.ip_address==null? ' ': result.ip_address}}</td>
+				<td>{{=result.join_ip}}</td>
+				<td>{{=result.created}}</td>
+				<td>
+				{{?result.fcreated}}
+					{{=result.fcreated}}
+				{{?}}
+				</td>
+				<td>{{=result.joincnt}}</td>
+				{{?it.user.userclass == 'admin'}}
+					<td>
+					{{?result.allowplay == 0}}
+						<input type="submit" class="button" style=" white-space:normal; background-color:#EB2946" value="승인" onclick="setPlay({{=result.id}});">
+					{{??}}
+						<input type="submit" class="button" style=" white-space:normal;"  value="비승인" onclick="setPlay({{=result.id}});">
+					{{?}}
+					</td>
+					<td>
+					{{?result.chatisok == 0}}
+						<input type="submit" class="button" style="background-color:#EB2946" value="승인" onclick="chatCancel({{=result.id}});">
+					{{??}}
+						<input type="submit" class="button"  value="금지" onclick="chatCancel({{=result.id}});">
+					{{?}}
+					</td>
+					<td>
+					{{?result.outisok == 0}}
+						<a href="/admin-logout?userid={{=result.id}}&page={{=it.user.page}}">강퇴</a>	
+					{{?}}
+					</td>
+					<td>
+						<a href="/admin-qna?username={{=result.username}}">보기</a>
+					</td>
+				{{?}}
+					<td style="width:7%;">
+							<a href="/viewInOutput?uid={{=result.id}}">내역보기</a>
+					</td>
+				{{?it.user.userclass == 'admin'}}
+					<td>{{=result.memo == null? ' ' : result.memo}}</td>
+					<td>
+						<input type="submit" class="button" style="padding:2px; white-space:normal; background-color:#EB2946" value="편집" onclick="editInfo({{=result.id}})">
+					</td>
+				{{?}}
+				<input type="hidden" name="total" id="total" value ="{{=result.total_count}}"/>
+			</tr>
+			{{~}}
+		</tbody>
+		{{?}}	
+</table>
+<div id="idDivPage" style="width: 100%; height: 30px; text-align: center;"></div>
+<div id="idDivAccountInfo" style="position: fixed; display: none;"></div>
+<div id="idDivUserInfo" style="position: fixed; display: none;"></div>
+
+</div>
+<style>
+	.pageButton { float: left; padding: 0px 10px; } .selectPageColor { color: #0078a0; }
+</style>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

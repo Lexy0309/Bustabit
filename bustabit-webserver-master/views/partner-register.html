@@ -1,0 +1,113 @@
+{{##def.page_title = 'Register' #}}
+
+{{##def.content:
+<script type="text/javascript">
+    window.onload = function () {
+        if (document.getElementById('confirmation') !== null) {
+            document.getElementById('confirmation').onchange = validatePassword;
+            document.getElementById('password').onchange = validatePassword;
+        }
+    };
+    function validatePassword() {
+        var password = document.getElementById('password').value;
+        var confirm = document.getElementById('confirmation').value;
+        if (password != confirm) {
+            document.getElementById('confirmation').setCustomValidity("비밀번호가 동일하지 않습니다.");
+        } else document.getElementById("confirmation").setCustomValidity('');
+    }
+</script>
+        <div class="register">
+           <form action="/partner_register" method="post">
+                <div class="row">
+                    <div class="large-12 columns input">
+                        <h5>추천인 만들기</h5>
+                        <hr>
+                    </div>
+					<input type="hidden" name="pid" id="pid" value ="{{?it.user.result}}{{=it.user.result.id}}{{?}}"/>
+					<input type="hidden" name="puid" id="puid" value ="{{?it.user.result}}{{=it.user.result.id1}}{{?}}"/>
+					<input type="hidden" name="pclass" id="pclass" value ="{{?it.user.result}}{{=it.user.result.userclass}}{{?}}"/>
+					<input type="hidden" name="level" id="level" value ="{{?it.user.result}}{{=it.user.result.level}}{{?}}"/>
+					<div class="large-12 columns input">
+                        <div class="row">
+                            <div class="large-3 columns">
+                                <label for="username">※ 추천인 이름</label>
+                            </div>
+                            <div class="large-9 columns">
+                                <input id="name" type="text" name="name" value="{{?it.user.result}}{{=it.user.result.name}}{{?}}" autocomplete="off" pattern="[A-Za-z0-9_\-]{3,16}" title="추천인 이름은 영문,숫자,특수문자로 구성할수 있습니다." maxlength="20" required />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="large-12 columns input">
+                        <div class="row">
+                            <div class="large-3 columns">
+                                <label for="email">※ 이메일</label>
+                            </div>
+                            <div class="large-9 columns">
+                                <input type="email" id="email" value="{{?it.user.result}}{{=it.user.result.email}}{{?}}" placeholder="you@email.com" name="email" autocomplete="off"/>
+                            </div>
+                        </div>
+                    </div>
+		
+                    <div class="large-12 columns input">
+                        <div class="row">
+                            <div class="large-3 columns">
+                                <label>※ 비밀번호</label>
+                            </div>
+                            <div class="large-9 columns">
+                                <input id="password" type="password" value="{{?it.user.result}}{{=it.user.result.password}}{{?}}" name="password" autocomplete="off" pattern=".{7,200}" title="비밀번호는 7자 이상 사용이 가능합니다." required/>
+                                <small>비밀번호는 7자이상 사용이 가능합니다.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="large-12 columns input">
+                        <div class="row">
+                            <div class="large-3 columns">
+                                <label>※ 비밀번호 확인</label>
+                            </div>
+                            <div class="large-9 columns">
+                                <input id="confirmation" type="password" value="{{?it.user.result}}{{=it.user.result.password}}{{?}}" name="confirmation" autocomplete="off" pattern=".{7,200}" data-equal-id="password" maxlength="20" required/>
+                            </div>
+                        </div>
+                    </div>
+					<div class="large-12 columns input">
+						<div class="row">
+							<div class="large-3 columns">
+								<label>※ 휴대폰 번호</label>
+							</div>
+							<div class="large-9 columns">
+								<input id="phone" type="text" value="{{?it.user.result}}{{=it.user.result.phone}}{{?}}" name="phone" autocomplete="off"  placeholder="예:) 010-1234-5678" maxlength="20" required="" pattern="[0-9_\-]{3,16}" title="휴대폰 번호는 숫자, 특수문자로 구성할수 있습니다."> 
+							</div>
+						</div>
+					</div>
+					<div class="large-12 columns input">
+						<div class="row">
+							<div class="large-3 columns">
+								<label>※ 추천코드</label>
+							</div>
+							<div class="large-9 columns">
+								
+								<input id="partner_code" type="text"  value="{{?it.user.result}}{{=it.user.result.partner_code}}{{?}}"  name="partner_code" autocomplete="off"  maxlength="20" required="">
+								<!--<input id="partner_auth" name="partner_auth" class="border-button right blue" type="submit" style="width:115px; display: block;" value="중복체크"/> -->
+							</div>
+						</div>
+					</div>
+					<div class="large-12 columns input">
+						<div class="row">
+							<div class="large-3 columns">
+								<label>※ 지분률</label>
+							</div>
+							<div class="large-9 columns">
+								<input id="jibun" type="text" value="{{?it.user.result}}{{=it.user.result.jibun}}{{?}}" name="jibun" autocomplete="off" maxlength="20" required="">
+							</div>
+						</div>
+					</div>
+                    <div class="large-12 columns">
+						<input class="border-button right blue" type="submit" value="취소" onclick="location.href=&#39;/admin-partner&#39;" />
+						<input id="registerSubmit" style="display: block; margin-right:10px;" class="border-button right blue" type="submit" value="확인"/>
+					</div>
+                </div>
+            </form>
+        </div>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

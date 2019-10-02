@@ -1,0 +1,72 @@
+<script src="/css/jquery-1.10.1.min.js"></script>
+<script src="/css/jquery-ui.js"></script>
+<script src="/css/pagination.js"></script>
+<script type="text/javascript">
+$( document ).ready(function() {
+	var total = 1;
+	total = Number($('#total').val());
+	page = Number($('#page1').val());
+	if(total) {
+		GetPageValue(total, page, 'admin-partner-result');
+	}
+});
+function modify(uId){
+	page = Number($('#page').val());
+	location.href = '/modify_partner?uId=' +uId;
+}
+function deletePt(uId){
+	if(!confirm("정말로 삭제하시겠습니까?")) return;
+	location.href = '/partner-delete?uId=' + uId;
+}
+
+</script>
+<input type="hidden" name="page1" id="page1" value ="{{=it.user.page1}}"/>
+<table class="leaders">
+	<thead>
+		<tr>
+			<td style="width:20%;">이름</td>
+			<td style="width:10%;">비밀번호</td>
+			<td style="width:10%;">유형</td>			
+			<td style="width:10%;">소속</td>
+			<td style="width:20%;">추천코드</td>
+			<td style="width:10%;">지분률</td>
+			{{?it.user.userclass == 'admin'}}
+			<td style="width:10%;">수정</td>
+			<td style="width:10%;">삭제</td>
+			{{?}}
+		</tr>
+	</thead>
+		{{?it.user.results.length > 0}}
+		<tbody>
+			{{~it.user.results : result:index}}
+			{{?result.pclass == 'distributor'}}
+			<tr style="background-color:#bffffb;">
+			{{??}}
+			<tr>
+			{{?}}
+			<td style="width:20%;">
+				<a href="/codeByList?code={{=result.partner_code}}">{{=result.name}}</a>
+			</td>
+			<td style="width:10%;">{{=result.password}}</td>
+			<td style="width:10%;">{{?result.pclass == 'distributor'}}총판{{??}}파트너{{?}}</td>
+			<td style="width:10%;">{{?result.pclass == 'partner'}}{{=result.belong}}{{?}}</td>
+			<td style="width:20%;">{{=result.partner_code}}</td>
+			<td style="width:10%;">{{=result.jibun}}%</td>
+			{{?it.user.userclass == 'admin'}}
+			<td style="width:10%;">
+				<input type="submit" class="button" style="padding:1px;" value="수정" onclick="modify(&#39;{{=result.id}}&#39;)">
+			</td>
+			<td style="width:10%;">
+				<input type="submit" class="button" style="padding:2px; white-space:normal; background-color:#EB2946" value="삭제" onclick="deletePt(&#39;{{=result.id}}&#39;)">
+			</td>
+			{{?}}
+			<input type="hidden" name="total" id="total" value ="{{=result.total_count}}"/>
+			</tr>
+			{{~}}
+		</tbody>
+		{{?}}	
+</table>
+<div id="idDivPage" style="width: 100%; height: 30px; text-align: center;"></div>
+<style>
+	.pageButton { float: left; padding: 0px 10px; } .selectPageColor { color: #0078a0; }
+</style>

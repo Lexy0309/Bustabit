@@ -1,0 +1,110 @@
+<script src="/css/jquery-1.10.1.min.js"></script>
+<script src="/css/jquery-ui.js"></script>
+<span id ="rightside" ></span> 
+  <input id="btntoday" type="button" value="Today" onclick="goto_today();"></input> 
+  <input id="btnbefore" type="button" value="<" onclick="before_month();"></input> 
+  <font color="#541300"> 
+    <span id="select_year" > 2014</span><font size="6px">년</font> 
+    <span id="select_month">12</span><font size="6px">월</font> 
+    <input id="btnafter" type="button" value=">" onclick="after_month();" ></input> 
+  </font>
+
+
+<script>
+$( document ).ready(function() {
+		callcalendar();
+	});
+function callcalendar(){ 
+     goto_today(); 
+} 
+function calendar(year,month,today){ 
+     var table = '<table class="leaders">';
+	 table +='<thead>';
+     table += '<tr>';
+     table += '<td><font color="red"><b> 일 </b></font></td>';
+     table += '<td><b> 월 </b></td>';
+     table += '<td><b> 화 </b></td>';
+     table += '<td><b> 수 </b></td>';
+     table += '<td><b> 목 </b></td>';
+     table += '<td><b> 금 </b></td>';
+     table += '<td><font color="blue"><b> 토 </b></font></td></tr>';
+	 table += '</thead>';
+
+     table += '<br/>';
+     
+     var date = new Date(); 
+     month = month||date.getMonth(); 
+  
+     date = new Date(year,month,1); 
+     var day = date.getDay(); 
+         
+     for(var i=0; i<day; i++){ 
+            table += '<td > &nbsp;</td>'; 
+     } 
+     while(date.getMonth()==month){ 
+            if(date.getDate()!=1&& date.getDay()==0){ 
+                   table += '<tr></tr>'; 
+            } 
+          
+            if ( date.getDay() == "0" ) { 
+                   if(  today == date.getDate()) 
+                       table += '<td><font color="green">'+date.getDate()+'</font></td>'; 
+                   else 
+                       table += '<td><font color="red">'+date.getDate()+'</font></td>'; 
+               } else if ( date.getDay() == "6" ) { 
+                   if(  today == date.getDate()) 
+                       table += '<td><font color="green">'+date.getDate()+'</font></td>'; 
+                   else 
+                       table += '<td><font color="blue">'+date.getDate()+'</font></td>'; 
+               } else { 
+                   if( today == date.getDate() ) 
+                       table += '<td><font color="green">'+date.getDate()+'</font></td>'; 
+                   else 
+                       table += '<td>'+date.getDate()+'</td>'; 
+            } 
+            date.setDate(date.getDate()+1);
+     } 
+     var nextFirstDay=date.getDay(); 
+     if(nextFirstDay!=0){  
+            var last = 6-nextFirstDay+1; 
+            for(var i=0;i<last;i++){ 
+                   table += '<td> &nbsp; </td>'; 
+            } 
+     } 
+     table += '</tr></table>'; 
+     
+     document.getElementById("rightside").innerHTML=table; 
+} 
+function before_month(){
+     var year= window.document.getElementById("select_year"); 
+     var month= window.document.getElementById("select_month"); 
+     if(month.innerHTML==1){ 
+            month.innerHTML=12; 
+            year.innerHTML= parseInt(year.innerHTML)-1; 
+        } else{ 
+            month.innerHTML=parseInt(month.innerHTML)-1;
+     } 
+     calendar(year.innerHTML,parseInt(month.innerHTML)-1); 
+} 
+function after_month(){ 
+     var year = window.document.getElementById("select_year"); 
+     var month = window.document.getElementById("select_month"); 
+     if(month.innerHTML==12){ 
+            month.innerHTML=1; 
+            year.innerHTML=parseInt(year.innerHTML)+1; 
+        } else { 
+            month.innerHTML=parseInt(month.innerHTML)+1; 
+     } 
+     calendar(year.innerHTML,parseInt(month.innerHTML)-1); 
+} 
+function goto_today() 
+{ 
+     var now = new Date(); 
+     var month = now.getMonth()+1; 
+     var year= window.document.getElementById("select_year"); 
+     var month= window.document.getElementById("select_month"); 
+     year.innerHTML  = now.getFullYear(); 
+     month.innerHTML = now.getMonth()+1; 
+     calendar(year.innerHTML,parseInt(month.innerHTML)-1, now.getDate());
+}
+</script>

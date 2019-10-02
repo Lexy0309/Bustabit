@@ -1,0 +1,12 @@
+<script src="/css/jquery-1.10.1.min.js"></script>
+<script src="/css/jquery-ui.js"></script>
+<script src="/css/pagination.js"></script>
+<script type="text/javascript">
+$( document ).ready(function() {
+	if(document.getElementById('username_auth_index').value != '0')
+			alert('중복된 계정입니다.');
+	else alert('승인된 계정입니다.');
+});
+</script>
+
+<input id="username_auth_index" type="text" name="username_auth_index" value="{{?it.result}}{{=it.result.id}}{{??}}0{{?}}" style="display:none;">

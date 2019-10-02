@@ -1,0 +1,85 @@
+{{##def.page_title = '쪽지함' #}}
+
+{{##def.content:
+<script>
+$( document ).ready(function() {
+	Search(1);
+});
+function Search(page){
+	document.getElementById('page').value = Number(page);
+	document.getElementById('memoTitle').value = '';
+	document.getElementById('memoContent').value = '';
+	document.getElementById('idUpdateWrite').value = '등록';
+	document.getElementById('toAll').checked = false;
+	$.ajax({
+		url: "./search-memo-list",
+		type: "POST",
+		data: $("form.condition").serialize(),
+		success: function(data) {
+			$("#result").html(data);	
+		}
+	});
+}
+function InsertMemo() {
+	if (document.getElementById('memoTitle').value.replace(/ /g, '') == '') { 
+		alert('제목을 입력해 주세요.'); return; 
+	} 
+	if (document.getElementById('memoContent').value.replace(/ /g, '') == '') { 
+		alert('내용을 입력해 주세요.'); return; 
+	}
+	if (document.getElementById('toAll').checked==false && document.getElementById('username1').value.replace(/ /g, '') == '') { 
+		alert('사용자를 선택해주세요.'); return; 
+	}
+	
+	var title = encodeURIComponent(document.getElementById('memoTitle').value);
+	var content = encodeURIComponent(document.getElementById('memoContent').value);
+	var uId = document.getElementById('memo_uid').value;
+	var memo_state = document.getElementById('idUpdateWrite').value;
+	var username = document.getElementById('username1').value;
+	var toAll = (document.getElementById('toAll').checked)? 1 : 0;
+	if (!confirm("" + memo_state + " 하시겠습니까?")) return; 
+	location.href = '/admin-memo-insert?title=' + title + '&text=' + content + '&state=' + memo_state + '&uId=' + uId + '&username=' + username + '&toAll=' + toAll;
+}
+</script>
+<div class="content row panel radius">
+	<div class="search">
+		<form class="condition">
+			<input type="hidden" name="page" id="page" value="0"/>
+			<input type="hidden" name="kind" value=" ">
+			<div style="float: left; width: calc(100% - 5px);">
+				<label for="idLabNotice" style="padding:5px;display:inline;">사용자명</label>
+				<!--
+				<select name="username" id="username" style="width:calc((100% - 26px) /7); height:37px; display:inline; padding:5px; margin-right:5px">
+					<option>  </option>
+					{{~it.user.results : result:index}}
+							<option value="{{=result.id}}">{{=result.username}}</option>
+					{{~}}
+					
+				</select>
+				-->
+				<input id="username1" name="username1" style="width:calc((100% - 26px) /7); height:37px; display:inline; padding:5px; white-space: normal; margin-right:5px;" type="text" value="">
+				<input id="idChargeMoney" class="light-button" style=" width: 15%; height: 37px; padding: 5px;" type="button" value="검색" onclick="Search(1);">
+			</div>
+		</form>
+	</div>
+	<div id="memo_edit">
+		<form class = "condition">
+			<input type="hidden" name="page" id="page" value="0" />
+		</form>
+		<input type="hidden" name="memo_uid" id="memo_uid" value="0" />
+		<label for="idLabTitle">제목</label>
+		<input id="memoTitle" name="memoTitle" type="text" value="" maxlength="50" required="">
+		<label for="idLabContent">내용</label>
+		<textarea id="memoContent" name="memoContent" rows="2" cols="20" style="min-height:150px;"  wrap="hard" required=""></textarea>
+	</div>
+	<div style="width:260px; display:block;float:right;">
+		<input type="checkbox" id="toAll" name="toAll" style="margin-top:11px;">&nbsp;&nbsp;전체보내기
+		<input id="idOpenList" class="button secondary right" type="button" value="취소" onclick="location.href = &#39;/admin-memo&#39;">
+		<input id="idUpdateWrite" class="button secondary right" style="margin-right:5px;" type="button" value="등록" onclick="InsertMemo();">
+	</div>
+<div id="result"></div>
+</div>
+#}}
+
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

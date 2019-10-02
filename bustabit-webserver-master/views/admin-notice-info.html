@@ -1,0 +1,17 @@
+
+<input type="hidden" name="notice_uid" id="notice_uid" value="{{=it.user.notice.uid}}" />
+<label for="idLabTitle">제목</label>
+
+<input id="idTitle" name="idTitle" type="text" value="{{=it.user.notice.subject}}" maxlength="50" required="">
+
+<label for="idLabContent">내용</label>
+<input type="hidden" name="pid" id="pid" value="{{=it.user.notice.content}}"/>
+
+<textarea id="idContent" name="idContent" rows="2" cols="20" style="min-height:150px;"  wrap="hard" required=""></textarea>
+<script>
+$( document ).ready(function() {
+	document.getElementById('idContent').value = decodeURIComponent(document.getElementById('pid').value);
+});
+</script>
+
+		

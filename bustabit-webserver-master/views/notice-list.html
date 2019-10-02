@@ -1,0 +1,47 @@
+{{##def.page_title = '공지사항' #}}
+
+{{##def.content:
+
+<script>
+$( document ).ready(function() {
+	var total = 1;
+	total = Number($('#total').val());
+	page = Number($('#page').val());
+	if(total) {
+		GetPageValue(total, page, 'notice-list');
+	}
+});
+</script>
+<div class="content row panel radius">
+    <h5>공지사항</h5>
+    <hr>
+	<input type="hidden" name="page" id="page" value ="{{=it.user.page}}"/>
+    <table class="leaders">
+        <thead>
+            <tr>
+				<td style="width:10%;">No</td>
+				<td style="width:90%;">제목</td>
+            </tr>
+        </thead>
+        <tbody>
+            {{~it.user.leaders :leader:index}}
+                <tr>
+                    <td style="width:10%">{{=index+1}}</td>
+                        
+                    </td>
+                    <td style="width:90%;text-align:left;">
+                        <a href="/notice-read?idx={{=leader.uid}}"><p><span style="font-size:20px"><b><span style="color:#ff8000">MaxLine</span>{{=leader.subject}}</b></span></p></a>
+                    </td>
+					<input type="hidden" name="total" id="total" value ="{{=leader.total_count}}"/>
+				</tr>
+            {{~}}
+        </tbody>
+    </table>
+</div>
+<style>
+	.pageButton { float: left; padding: 0px 10px; } .selectPageColor { color: #0078a0; }
+</style>
+<div id="idDivPage" style="width: 100%; height: 30px; text-align: center;"></div>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

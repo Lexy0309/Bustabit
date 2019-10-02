@@ -1,0 +1,219 @@
+{{##def.page_title = '금액 충전 요청' #}}
+
+{{##def.content:
+<script>
+	$( document ).ready(function() {
+		var total = 1;
+		total = Number($('#total').val());
+		page = Number($('#page').val());
+		var str = document.getElementById('str1').value;
+		if(str=='notcondition')
+			alert('이미 충전요청중인게 있습니다.');
+		if(total) {
+			GetPageValue(total, page, 'money-charge');
+		}
+	});
+	setInterval(findState, 30000);
+	function findState(){
+		page = Number($('#page').val());
+		$.ajax({
+			url: "./money-charge-list",
+			type: "POST",
+			data: {page : page},
+			success: function(data) {
+				$("#result").html(data);
+			}
+		});
+	}
+	function isNumberKey(evt) { 
+		document.getElementById('idTxtMoney').addEventListener("input", function () {
+			var money = document.getElementById('idTxtMoney').value.replace(/,/g, ''); 
+			money = money.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"); 
+			document.getElementById('idTxtMoney').value = money; 
+		});
+		var charCode = (evt.which) ? evt.which : event.keyCode; 
+		if (charCode > 31 && (charCode < 48 || charCode > 57)) return false; 
+		return true; 
+	};
+	function AddMoney(addMoney) { 
+		 var currentMoney = Number(document.getElementById('idTxtMoney').value.replace(/,/g, '')); 
+		 currentMoney += Number(addMoney); 
+		 document.getElementById('idTxtMoney').value = currentMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"); 
+	} 
+	function InitMoney() { document.getElementById('idTxtMoney').value = '0'; }
+	function checkRegisterInfo() {
+       var requestMoney = Number(document.getElementById('idTxtMoney').value.replace(/,/g, '')); 
+		if(requestMoney < 10000) {alert('만원이상부터 가능합니다'); return false;}
+		if(requestMoney%1000!=0) {alert('천원단위로 가능합니다'); return false;}
+		var bank = document.getElementById('idBank').value;
+		var owner = document.getElementById('idOwner').value;
+		var accountnum = document.getElementById('idAccount').value;
+		if(!bank || !owner || !accountnum) {alert('계좌가 준비되지 않았습니다.'); return false;}
+		return true;
+    }
+	function DeleteHistory(deleteIndex) {
+		 if (!confirm("정말로 삭제하시겠습니까?")) return; 
+		 $.ajax({
+			url: "./delete-money-history",
+			type: "POST",
+			data: {dataIndex : deleteIndex},
+			success: function(data) {
+				location.href = '/money-charge';
+			}
+		});
+	}
+	function RequestAccount() { 
+		if (document.getElementById('idDivAccountInfo').style.display == 'none') {	
+			document.getElementById('idDivAccountInfo').style.top = (window.innerHeight / 2 - 150).toString() + 'px'; 
+			document.getElementById('idDivAccountInfo').style.left = (window.innerWidth / 2 - 150).toString() + 'px'; 
+			document.getElementById('idDivAccountInfo').style.display = 'block'; 
+			setTimeout(function () { if (document.getElementById('idDivAccountInfo').style.display = 'block') { document.getElementById('idDivAccountInfo').style.display = 'none'; } }, 300 * 1000); 
+		} 
+	}
+	
+</script>
+<div class="content row panel radius">
+	<form action="/request-money-charge" method="post">
+	<div style="border-bottom:1px solid #DDDDDD; margin-bottom:20px;">
+		<div class="tabButtonSelect" onclick="location.href = &#39;/money-charge&#39;">충전</div>
+		<div class="tabButton" onclick="location.href = &#39;/money-exchange&#39;">환전</div>
+		<div style="clear:both;"></div>
+	</div>
+	<!-- <h5>금액 충전</h5> <hr> -->
+	<input type="hidden" name="page" id="page" value ="{{=it.user.page}}"/>
+	<input type="hidden" name="str1" id="str1" value ="{{?it.user.str}}{{=it.user.str}}{{?}}"/>
+
+	<label for="idLabNotice">주의사항</label>
+	
+	<div style="border: 1px solid #DDDDDD; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); padding: 5px;">
+		<label for="idLabAccount">
+			<p><span style="font-size: 14px">☆ 입금계좌는 주기적으로 변경되오니 반드시 </span><span style="color: #ff0000; font-size: 14px"><b><span style="font-size: 14px">계좌 보기</span>
+				</b>
+				</span><span style="font-size: 14px">에서 확인 부탁드리겠습니다.</span>
+			</p>
+			<p><span style="font-size: 14px">&nbsp;</span>
+			</p>
+			<p><span style="font-size: 14px">☆ 미 입금 충전신청은 보류처리가 되며 충전지연의 원인이 됩니다.</span>
+			</p>
+			<p><span style="font-size: 14px">&nbsp;</span>
+			</p>
+			<p><span style="font-size: 14px">☆ 충전 신청 금액과 실제 입금액이 일치하지 않으면 충전처리가 되지 않습니다.</span>
+			</p>
+			<p><span style="font-size: 14px">&nbsp;</span>
+			</p>
+			<p><span style="font-size: 14px">☆ 회원가입 시 등록한&nbsp;</span><span style="color: #ff0000; font-size: 14px"><b><span style="font-size: 14px">예금주와 입금자명이 반드시 일치</span>
+				</b>
+				</span><span style="font-size: 14px">해야 충전처리가 됩니다.</span>
+			</p>
+			<p><span style="font-size: 14px">&nbsp;</span>
+			</p>
+			<p><span style="font-size: 14px">☆ </span><span style="color: #ff0000; font-size: 14px"><b><span style="font-size: 14px">토스의 경우 송금이 거부 될 수 있습니다.</span>
+				</b>
+				</span>
+			</p>
+			<p><span style="font-size: 14px">&nbsp;</span>
+			</p>
+			<p><span style="font-size: 14px">☆ 충전 신청은 </span><span style="color: #0000ff; font-size: 14px"><b><span style="font-size: 14px">1만원 이상 천원 단위로 가능</span>
+				</b>
+				</span><span style="font-size: 14px">합니다.[백원단위 충전불가]</span>
+			</p>
+			<p><span style="font-size: 14px">&nbsp;</span>
+			</p>
+			<p><span style="font-size: 18px">※</span>  <span style="color: #ff0000; font-size: 18px"><b><span style="color: #0000ff; font-size: 18px">입금 후 <span style="color: #00ff00"><span style="color: #000000">충전신청 부탁 드립니다.!!</span></span>
+				</span>
+				</b>
+				</span>
+			</p>
+			<p><span style="font-size: 14px">&nbsp;</span>
+			</p>
+		</label>
+	</div>
+	<div style="margin-top:20px;"></div>
+	<div style="display:none;">
+		<label for="idLabAccount">계좌 정보</label>
+		<input type="text" value="undefined" readonly="">
+	</div>
+	<div style="margin-top:30px;"></div>
+	<label for="idLabMoney" style="display:none;">충전 금액</label>
+	<div style="float: left; width: calc(70% - 10px);">
+		<input id="idTxtMoney" name="idTxtMoney" style="margin-bottom:6px;" type="text" value="0" maxlength="11" required="" onkeypress="return isNumberKey(event)">
+		<input type="button" class="button secondary left moneyFontSize" style="width:calc((100% - 26px) / 6); height:37px; padding:0px; white-space: normal; margin-right:5px;" value="1만원" onclick="AddMoney(10000);">
+		<input type="button" class="button secondary left moneyFontSize" style="width:calc((100% - 26px) / 6); height:37px; padding:0px; white-space: normal; margin-right:5px;" value="5만원" onclick="AddMoney(50000);">
+		<input type="button" class="button secondary left moneyFontSize" style="width:calc((100% - 26px) / 6); height:37px; padding:0px; white-space: normal; margin-right:5px;" value="10만원" onclick="AddMoney(100000);">
+		<input type="button" class="button secondary left moneyFontSize" style="width:calc((100% - 26px) / 6); height:37px; padding:0px; white-space: normal; margin-right:5px;" value="50만원" onclick="AddMoney(500000);">
+		<input type="button" class="button secondary left moneyFontSize" style="width:calc((100% - 26px) / 6); height:37px; padding:0px; white-space: normal; margin-right:5px;" value="100만원" onclick="AddMoney(1000000);">
+		<input type="button" class="button secondary left moneyFontSize" style="width:calc((100% - 26px) / 6); height:37px; padding:0px; white-space: normal;" value="초기화" onclick="InitMoney();">
+	</div>
+	<input id="idRequestAccount" class="button secondary" style="float: left; width: 15%; height: 80px; padding: 3px; white-space: normal; margin-left: 5px;" type="button" value="계좌 보기" onclick="RequestAccount();">
+	<!--<input id="idChargeMoney" class="light-button right" style="float: left; width: 15%; height: 80px; padding: 3px; white-space: normal;" type="button" value="충전 요청" onclick="RequestCharge(&#39;{{=it.user.id}}&#39;);">-->
+	<input id="idChargeMoney" class="light-button right" style="float: left; width: 15%; height: 80px; padding: 3px; white-space: normal;" type="submit" value="충전 요청" onclick="if (!checkRegisterInfo()) return false;" >
+
+	<div style="clear:both;"></div>
+	<div style="margin-top:50px;"></div>
+	 <h5>충전 내역</h5>
+	 <hr>
+	 <div id="result">
+		 <table class="leaders">
+				<thead>
+					<tr>
+						<td style="width:20%;">구분</td>
+						<td style="width:20%;">금액</td>
+						<td style="width:20%;">상태</td>
+						<td style="width:20%;">날짜</td>
+						<td style="width:20%;">삭제</td>
+					</tr>
+				</thead>
+				{{?it.user.moneys.length > 0}}
+				<tbody>
+					{{~it.user.moneys : money:index}}
+					<tr>
+						{{?money.level == 'money'}}
+						<td style="width:20%;">충전</td>
+						{{??money.level == 'point'}}
+						<td style="width:20%;">보너스</td>
+						{{?}}
+						<td style="width:20%; text-align:left;">+{{=money.balance}}</td>
+						{{?money.pay_state == '보류'}}
+							<td style="width:20%;">요청</td>
+						{{??}}
+							<td style="width:20%;">{{=money.pay_state}}</td>
+						{{?}}
+						<td style="width:20%;">{{=money.datetime}}</td>
+						{{?money.pay_state == '승인' || money.pay_state == '거부' }}
+						<td style="width:20%;">
+							<input type="button" class="button" style="padding:2px; white-space:normal; background-color:#EB2946;" value="삭제" onclick="DeleteHistory(&#39;{{=money.id}}&#39;)">
+						</td>
+						{{??}}
+							<td style="width:20%;"></td>
+						{{?}}
+						<input type="hidden" name="total" id="total" value ="{{=money.total_count}}"/>
+					</tr>
+					{{~}}
+				</tbody>
+				{{?}}
+			</table>
+			</div>
+	 <!-- 계좌 정보 페이지 -->
+	<div id="idDivAccountInfo" style="position: fixed; display: none;">
+		<div style="width: 300px; height: 200px; padding: 10px; background: #FFFFFF; border: 4px solid #F3962F;">
+			<label for="idLabAccount">충전 계좌정보</label>
+			<div style="margin-top:10px;"></div>
+
+			<input id="idBank" name="idBank" type="text" style="float: left; width: 60%; margin-bottom:10px;" value="{{?it.user.account}}{{=it.user.account.bank}}{{?}}" readonly="">
+			<input id="idOwner" name="idOwner" type="text" style="float: left; width: calc(40% - 10px); margin-left: 10px; margin-bottom: 10px;" value="{{?it.user.account}}{{=it.user.account.owner}}{{?}}" readonly="">
+			<div style="clear:both;"></div>
+			<input id="idAccount" name="idAccount" type="text" value="{{?it.user.account}}{{=it.user.account.accountnum}}{{?}}" readonly="">
+			<div style="margin-top:20px;"></div>
+			<input id="idCloseAccountInfo" class="button secondary right" type="button" value="닫기" onclick="document.getElementById(&#39;idDivAccountInfo&#39;).style.display = &#39;none&#39;;">
+		</div>
+	</div>
+	<!-- 페이지 컨트롤 -->
+	<style>
+		.pageButton { float: left; padding: 0px 10px; } .selectPageColor { color: #0078a0; }
+	</style>
+	<div id="idDivPage" style="width: 100%; height: 30px; text-align: center;"></div>
+	</form>
+	</div>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

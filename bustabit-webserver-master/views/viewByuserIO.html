@@ -1,0 +1,148 @@
+{{##def.page_title = '날짜별입출금내역' #}}
+
+{{##def.content:
+<script>
+	
+</script>
+<div class="content row panel radius">
+	 <h5>충전 내역</h5>
+	 <hr>
+	 <table class="leaders">
+			<thead>
+				<tr>
+					<td style="width:20%;">날짜</td>
+					<td style="width:10%;">사용자명</td>
+					<td style="width:10%;">총판/파트너명</td>
+					<td style="width:10%;">총판/파트너구별</td>
+					<td style="width:10%;">금액</td>
+					<td style="width:10%;">상태</td>
+					{{?it.user.userclass == 'admin'}}
+					<td style="width:10%;">은행명</td>
+					<td style="width:10%;">계좌번호</td>
+					<td style="width:10%;">예금주</td>
+					{{?}}
+				</tr>
+			</thead>
+			{{?it.user.moneyIn.length > 0}}
+			<tbody>
+				{{~it.user.moneyIn : money:index}}
+				<tr>
+					<td style="width:20%;">{{=money.datetime}}</td>
+					<td style="width:10%;">{{=money.username}}</td>
+					<td style="width:10%;">{{=money.pname}}</td>
+					{{?money.pclass == 'distributor'}}
+						<td style="width:10%;">총판</td>
+					{{??money.pclass == 'partner'}}
+						<td style="width:10%;">파트너</td>
+					{{?}}
+					<td style="width:10%; text-align:right;">+{{=money.balance}}</td>
+					<td style="width:10%;">{{=money.pay_state}}</td>
+					{{?it.user.userclass == 'admin'}}
+					<td style="width:10%;">{{=money.inbank}}</td>
+					<td style="width:10%;">{{=money.inaccountnum}}</td>
+					<td style="width:10%;">{{=money.inowner}}</td>
+					{{?}}
+				</tr>
+				{{~}}
+			</tbody>
+			{{?}}
+	 </table>
+	 <div style="border: 1px solid #DDDDDD; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); padding: 5px;">
+		 <label for="idLabAccount">
+			<span style="font-size: 14px; font-weight: bold;">합계: {{=it.user.totalin}}
+		 </label>
+	 </div>
+	<hr>
+
+	<h5>환전 내역</h5>
+	<hr>
+	 <table class="leaders">
+			<thead>
+				<tr>
+					<td style="width:20%;">날짜</td>
+					<td style="width:10%;">사용자명</td>
+					<td style="width:10%;">총판/파트너명</td>
+					<td style="width:10%;">총판/파트너구별</td>
+					<td style="width:10%;">금액</td>
+					<td style="width:10%;">상태</td>
+					{{?it.user.userclass == 'admin'}}
+					<td style="width:10%;">은행명</td>
+					<td style="width:10%;">계좌번호</td>
+					<td style="width:10%;">예금주</td>
+					{{?}}
+				</tr>
+			</thead>
+			{{?it.user.moneyOut.length > 0}}
+			<tbody>
+				{{~it.user.moneyOut : money:index}}
+				<tr>
+					<td style="width:20%;">{{=money.datetime}}</td>
+					<td style="width:10%;">{{=money.username}}</td>
+					<td style="width:10%;">{{=money.pname}}</td>
+					{{?money.pclass == 'distributor'}}
+						<td style="width:10%;">총판</td>
+					{{??money.pclass == 'partner'}}
+						<td style="width:10%;">파트너</td>
+					{{?}}
+					<td style="width:10%; text-align:right;">-{{=money.balance}}</td>
+					<td style="width:10%;">{{=money.pay_state}}</td>
+					{{?it.user.userclass == 'admin'}}
+					<td style="width:10%;">{{=money.outbank}}</td>
+					<td style="width:10%;">{{=money.outaccountnum}}</td>
+					<td style="width:10%;">{{=money.outowner}}</td>
+					{{?}}
+				</tr>
+				{{~}}
+			</tbody>
+			{{?}}
+	 </table>
+	 <div style="border: 1px solid #DDDDDD; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); padding: 5px;">
+		 <label for="idLabAccount">
+			<span style="font-size: 14px; font-weight: bold;">합계: {{=it.user.totalout}}
+		 </label>
+	 </div>
+	 <hr>
+
+	 <h5>정산 내역</h5>
+	<hr>
+	 <table class="leaders">
+			<thead>
+				<tr>
+					<td style="width:20%;">날짜</td>
+					<td style="width:10%;">총판/파트너명</td>
+					<td style="width:10%;">총판/파트너구별</td>
+					<td style="width:10%;">총입금액</td>
+					<td style="width:10%;">총출금액</td>
+					<td style="width:10%;">지분률</td>
+					<td style="width:20%;">정산금액</td>
+				</tr>
+			</thead>
+			{{?it.user.moneySet.length > 0}}
+			<tbody>
+				{{~it.user.moneySet : money:index}}
+				<tr>
+					<td style="width:20%;">{{=money.datetime}}</td>
+					<td style="width:10%;">{{=money.name}}</td>
+					{{?money.pclass == 'distributor'}}
+						<td style="width:10%;">총판</td>
+					{{??money.pclass == 'partner'}}
+						<td style="width:10%;">파트너</td>
+					{{?}}
+					<td style="width:10%; text-align:right;">{{=money.totalin}}</td>
+					<td style="width:10%;">{{=money.totalout}}</td>
+					<td style="width:10%;">{{=money.jibun}}</td>
+					<td style="width:20%;">{{=money.profit}}</td>
+				</tr>
+				{{~}}
+			</tbody>
+			{{?}}
+	 </table>
+	 <div style="border: 1px solid #DDDDDD; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); padding: 5px;">
+		 <label for="idLabAccount">
+			<span style="font-size: 14px; font-weight: bold;">합계: {{=it.user.totalset}}
+		 </label>
+	 </div>
+</div>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

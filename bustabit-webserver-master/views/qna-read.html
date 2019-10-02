@@ -1,0 +1,54 @@
+{{##def.page_title = '1:1문의' #}}
+
+{{##def.content:
+<script>
+function DeleteQNA(index) { 
+	if (!confirm("삭제 하시겠습니까?")) 
+	return; location.href = '/qna-delete?idx=' + index; 
+}
+$( document ).ready(function() {
+	document.getElementById('idContent').value = decodeURIComponent(document.getElementById('pid').value);
+	document.getElementById('idRly').value = decodeURIComponent(document.getElementById('rid').value);
+
+});
+</script>
+<div class="content row panel radius">
+	<h5>1:1문의</h5> 
+	<hr>
+	<input type="hidden" name="pid" id="pid" value="{{=it.user.content.inquiry_contents}}"/>
+	<input type="hidden" name="rid" id="rid" value="{{=it.user.content.reply_contents}}"/>
+	<table class="leaders">
+		<thead>
+			<tr>
+				<td style="width:10px;"></td>
+				<td style="width:60%; text-align:left;">
+					{{=it.user.content.inquiry_subject}}
+				</td>
+				<td style="width:20%;">
+					{{=it.user.content.datetime}}
+				</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td colspan="1">문의</td>
+				<td colspan="2" style="text-align:left; height:100px; vertical-align:top;">
+					<textarea rows="2" id="idContent" name ="idContent" cols="20" style="min-height:150px; width:100%; border:0px;box-shadow:none;" readonly="" wrap="hard"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="1">답변</td>
+				<td colspan="2" style="text-align:left; height:100px; vertical-align:top;">
+					{{?it.user.content.reply_contents != null}}
+						<textarea rows="2" id="idRly" cols="20" style="min-height:150px; width:100%; border:0px;box-shadow:none;" readonly=""></textarea>
+					{{?}}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<input id="idOpenList" class="button secondary left" type="button" value="목록" onclick="location.href = &#39;/qna-list&#39;">
+	<input id="idDeleteQNA" class="button secondary right" type="button" value="삭제" onclick="DeleteQNA(&#39;{{=it.user.content.no}}&#39;)">
+</div>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

@@ -1,0 +1,63 @@
+{{##def.page_title = '가상유저' #}}
+
+{{##def.content:
+<script type="text/javascript">
+$( document ).ready(function() {
+	var total = 1;
+	total = Number($('#total').val());
+	page = Number($('#page').val());
+	if(total) {
+		GetPageValue(total, page, 'admin-user');
+	}
+});
+function Delete(uId){
+	if(!confirm("정말로 로그아웃하시겠습니까?")) return;
+	location.href = '/admin-user-logout?uId=' + uId;
+}
+</script>
+
+<div class="content row panel radius">
+	<input type="hidden" name="page" id="page" value ="{{=it.user.page}}"/>
+	<div style="border-bottom:1px solid #DDDDDD; margin-bottom:20px;">
+		<div class="tabButton" onclick="location.href = &#39;/admin-user&#39;">회원</div>
+		<div class="tabButtonSelect" onclick="location.href = &#39;/admin-connector&#39;">접속자</div>
+		<div style="clear:both;"></div>
+	</div>
+	<div id="result">
+		<table class="leaders">
+			<thead>
+				<tr>
+					<td style="width:10%;">번호</td>
+					<td style="width:20%;">유저이름</td>
+					<td style="width:30%;">보유머니</td>
+
+					<td style="width:20%;">로그인시간</td>
+					<td style="width:20%;">로그아웃</td>
+				</tr>
+			</thead>
+				{{?it.user.results.length > 0}}
+				<tbody>
+					{{~it.user.results : result:index}}
+					<tr>
+						<td style="width:10%;">{{=index+1}}</td>
+						<td style="width:20%;">{{=result.username}}</td>
+						<td style="width:30%; text-align:left;">{{=result.balance_satoshis}}</td>
+						<td style="width:20%;">{{=result.created}}</td>
+						<td style="width:20%;">
+							<input type="submit" class="button" style="padding:2px; white-space:normal; background-color:#EB2946" value="로그아웃" onclick="Delete(&#39;{{=result.user_id}}&#39;)">
+						</td>
+						<input type="hidden" name="total" id="total" value ="{{=result.total_count}}"/>
+					</tr>
+					{{~}}
+				</tbody>
+				{{?}}	
+		</table>
+	</div>
+</div>
+<style>
+	.pageButton { float: left; padding: 0px 10px; } .selectPageColor { color: #0078a0; }
+</style>
+<div id="idDivPage" style="width: 100%; height: 30px; text-align: center;"></div>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

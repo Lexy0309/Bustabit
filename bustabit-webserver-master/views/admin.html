@@ -1,0 +1,14 @@
+{{##def.page_title = 'Play' #}}
+
+{{##def.content:
+    <div id="game-container">
+       
+    </div>
+	<link rel="stylesheet" href="{{? it.buildConfig }} /css/{{=it.buildConfig['admin.css']}} {{??}} /css/admin.css {{?}}" />
+    <!--RequireJs-->
+    <script data-main="/scripts/admin" src="{{? it.buildConfig }}/scripts/{{=it.buildConfig['admin-new.js']}}{{??}}/node_modules/requirejs/require.js{{?}}"></script>	
+
+    <!-- Detect the viewport size with css and javascript hack -->
+    <div id="handheld-detection"></div>
+#}}
+{{#def.include('./template/game_new')}}

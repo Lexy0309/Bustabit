@@ -1,0 +1,58 @@
+{{##def.page_title = '정산내역 상세보기' #}}
+
+{{##def.content:
+<script>
+$( document ).ready(function() {
+	Search(1);
+});
+function Search(page){
+	var username = document.getElementById('username').value;
+	var date = document.getElementById('date2').value;
+	$.ajax({
+		url: "./search-todaymoney-list",
+		type: "POST",
+		data: {
+			username: username,
+			date: date
+		},
+		success: function(data) {
+			$("#result").html(data);
+			
+		}
+	});
+}
+
+</script>
+<div class="content row panel radius">
+	<h5>정산내역 상세보기</h5> 
+	<hr>
+
+	<div class="search">
+			<input type="hidden" id="date2" name="date2" value="{{=it.user.date}}">
+			<div style="float: left; width: calc(100% - 5px);">
+				<label for="idLabNotice" style="padding:5px;display:inline;">사용자명</label>
+				<!--
+				<select name="username" id="username" style="width:calc((100% - 26px) /7); height:37px; display:inline; padding:5px; margin-right:5px">
+					<option>  </option>
+					{{~it.user.results : result:index}}
+							<option>{{=result.username}}</option>
+					{{~}}
+					
+				</select>
+				-->
+				<input id="username" name="username" style="width:calc((100% - 26px) /7); height:37px; display:inline; padding:5px; white-space: normal; margin-right:5px;" type="text" value="">
+				<input id="idChargeMoney" class="light-button" style=" width: 15%; height: 37px; padding: 5px;" type="button" value="검색" onclick="Search();">
+			</div>
+	</div>
+	<h6>[{{=it.user.date}}]의 유저별 매출통계</h6>
+	<hr>
+
+<div id="result"></div>
+<div id="controlButton" style="width: 100%; height: 30px;">
+		<input id="idChargeMoney" class="button secondary right" style="width: 10%; height: 30px; padding: 3px; white-space: normal;" type="button" value="취소" onclick="location.href = &#39;/admin-todaymoney&#39;">
+	</div>
+</div>
+#}}
+
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

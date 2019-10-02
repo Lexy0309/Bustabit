@@ -1,0 +1,100 @@
+{{##def.page_title = '공지' #}}
+
+{{##def.content:
+<script type="text/javascript">
+$( document ).ready(function() {
+	var total = 1;
+	total = Number($('#total').val());
+	page = Number($('#page').val());
+	if(total) {
+		GetPageValue(total, page, 'admin-notice');
+	}
+
+});
+function InsertNotice() { 
+	if (document.getElementById('idTitle').value.replace(/ /g, '') == '') { 
+		alert('제목을 입력해 주세요.'); return; 
+	} 
+	if (document.getElementById('idContent').value.replace(/ /g, '') == '') { 
+		alert('내용을 입력해 주세요.'); return; 
+	} 
+	
+	var title = encodeURIComponent(document.getElementById('idTitle').value);
+	var content = encodeURIComponent(document.getElementById('idContent').value);
+	var uId = document.getElementById('notice_uid').value;
+	var notice_state = document.getElementById('idUpdateWrite').value;
+	if (!confirm("" + notice_state + " 하시겠습니까?")) return; 
+	location.href = '/admin-notice-insert?title=' + title + '&text=' + content + '&state=' + notice_state + '&uId=' + uId; 
+}
+function Modify(uId){
+	$.ajax({
+		url: "./get_notice_info",
+		type: "POST",
+		data: {notice_uid: uId},
+		success: function(data) {
+			$("#notice_edit").html(data);
+			document.getElementById('idUpdateWrite').value = '수정';
+		}
+    });
+}
+function Delete(uId){
+	if(!confirm("정말로 삭제하시겠습니까?")) return;
+	location.href = '/admin-notice-delete?uId=' + uId;
+}
+</script>
+
+<div class="content row panel radius">
+	<input type="hidden" name="page" id="page" value ="{{=it.user.page}}"/>
+	<h5>공지사항</h5> 
+	<hr>
+	<div id="notice_edit">
+		<form class = "condition">
+			<input type="hidden" name="page" id="page" value="0" />
+		</form>
+		<input type="hidden" name="notice_uid" id="notice_uid" value="0" />
+		<label for="idLabTitle">제목</label>
+		<input id="idTitle" name="idTitle" type="text" value="" maxlength="50" required="">
+		<label for="idLabContent">내용</label>
+		<textarea id="idContent" name="idContent" rows="2" cols="20" style="min-height:150px;"  wrap="hard" required=""></textarea>
+	</div>
+		<input id="idOpenList" class="button secondary right" type="button" value="취소" onclick="location.href = &#39;/admin-notice&#39;">
+		<input id="idUpdateWrite" class="button secondary right" style="margin-right:5px;" type="button" value="등록" onclick="InsertNotice();">
+	<div id="result">
+		<table class="leaders">
+			<thead>
+				<tr>
+					<td style="width:10%;">번호</td>
+					<td style="width:40%;">제목</td>
+					<td style="width:30%;">작성일</td>
+					<td style="width:10%;">수정</td>
+					<td style="width:10%;">삭제</td>
+				</tr>
+			</thead>
+				{{?it.user.results.length > 0}}
+				<tbody>
+					{{~it.user.results : result:index}}
+					<tr>
+						<td style="width:10%;">{{=index+1}}</td>
+						<td style="width:40%; text-align:left;">{{=result.subject}}</td>
+						<td style="width:30%;">{{=result.write_datetime}}</td>
+						<td style="width:10%;">
+							<input type="submit" class="button" style="padding:1px;" value="수정" onclick="Modify(&#39;{{=result.uid}}&#39;)">
+						</td>
+						<td style="width:10%;">
+							<input type="submit" class="button" style="padding:2px; white-space:normal; background-color:#EB2946" value="삭제" onclick="Delete(&#39;{{=result.uid}}&#39;)">
+						</td>
+						<input type="hidden" name="total" id="total" value ="{{=result.total_count}}"/>
+					</tr>
+					{{~}}
+				</tbody>
+				{{?}}	
+		</table>
+	</div>
+</div>
+<style>
+	.pageButton { float: left; padding: 0px 10px; } .selectPageColor { color: #0078a0; }
+</style>
+<div id="idDivPage" style="width: 100%; height: 30px; text-align: center;"></div>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

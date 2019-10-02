@@ -1,0 +1,18 @@
+
+<input type="hidden" name="memo_uid" id="memo_uid" value="{{=it.user.memo.uid}}" />
+
+<label for="idLabTitle">제목</label>
+
+<input id="memoTitle" name="memoTitle" type="text" value="{{=it.user.memo.subject}}" maxlength="50" required="">
+
+<label for="idLabContent">내용</label>
+<input type="hidden" name="pid" id="pid" value="{{=it.user.memo.content}}"/>
+<textarea id="memoContent" name="memoContent" rows="2" cols="20" style="min-height:150px;"  wrap="hard" required=""></textarea>
+
+<input type="hidden" name="user_id" id="user_uid" value="{{=it.user.memo.uid}}" />
+
+<script>
+$( document ).ready(function() {
+	document.getElementById('memoContent').value = decodeURIComponent(document.getElementById('pid').value);
+});
+</script>

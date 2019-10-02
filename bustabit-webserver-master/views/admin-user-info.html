@@ -1,0 +1,49 @@
+<div style="width: 400px; height: 750px; padding: 10px; background: #FFFFFF; border: 4px solid #F3962F;">
+		<form class="condition">
+			<label for="idLabAccount">회원 정보 편집</label>
+			<div style="margin-top:10px;"></div>
+			{{?it.user.result}}
+			<label for="idLabNotice" style="float:left; width:20%;padding-top: 5px;padding-left: 5px;">회원이름</label>
+			<input id="username1" name="username1" type="text" style="float: left; width: 30%;" value="{{=it.user.result.username}}" readonly="">
+			<label for="idLabNotice" style="float:left; width:20%;padding-top: 5px;padding-left: 5px;">전화번호</label>
+			<input id="phone1" name="phone1" type="text" style="float: left; width: 30%; margin-bottom:10px;" value="{{=it.user.result.phone}}">
+			<div style="float:left; width:100%;">
+				<label for="idLabNotice" style="float:left; width:20%;padding-top: 5px;padding-left: 5px;">은행명</label>
+				<input id="bank1" name="bank1" type="text" style="float: left; width: 30%;" value="{{=it.user.result.bankindex}}">
+				<label for="idLabNotice" style="float:left; width:20%;padding-top: 5px;padding-left: 5px;">예금주</label>
+				<input id="owner1" name="owner1" type="text" style="float: left; width: 30%; margin-bottom:10px;" value="{{=it.user.result.deposit_name}}">
+			</div>
+			<div style="float:left; width:100%;">
+				<label for="idLabNotice" style="float:left; width:20%;padding-top: 5px;padding-left: 5px;">총입금액</label>
+				<input id="bank1" name="bank1" type="text" style="float: left; width: 30%;" value="{{=it.user.result.totalin}}" readonly="">
+				<label for="idLabNotice" style="float:left; width:20%;padding-top: 5px;padding-left: 5px;">총출금액</label>
+				<input id="owner1" name="owner1" type="text" style="float: left; width: 30%; margin-bottom:10px;" value="{{=it.user.result.totalout}}" readonly="">
+			</div>
+			<label for="idLabNotice" style="float:left; width:100%;padding-top: 5px;padding-left: 5px;">계좌번호</label>
+			<input id="accountnum1" name="accountnum1" type="text" style="float: left; width: 100%; margin-bottom:10px;" value="{{=it.user.result.accountnum}}">
+
+
+			<label for="idLabNotice" style="float:left; width:100%;padding-top: 5px;">새비밀번호</label>
+			<input id="password" name="password" type="text" style="float: left; width: 100%; margin-bottom:10px;" value="{{=it.user.result.password}}">
+			<label for="idLabNotice" style="float:left; width:100%;padding-top: 5px;">비밀번호 확인</label>
+			<input id="confirm" name="confirm" type="text" style="float: left; width: 100%; margin-bottom:10px;" value="">
+			<label for="idLabNotice" style="float:left; width:100%;padding-top: 5px;">보유금액</label>
+			<input type="text" style="float: left; width: 100%; margin-bottom:10px;" value="{{=it.user.result.balance_satoshis}}"  readonly="">
+			<label for="idLabNotice" style="float:left; width:100%;padding-top: 5px;">포인트</label>
+			<input type="text" style="float: left; width: 100%; margin-bottom:10px;" value="{{=it.user.result.point}}"  readonly="">
+
+			<label for="idLabNotice" style="float:left; width:100%;padding-top: 5px;">메모</label>
+			<textarea id="memo1" name="memo1" rows="4" cols="20" style="float: left; width: 100%; margin-bottom:10px;" wrap="hard">
+			{{?it.user.result.memo != null}}
+				{{=it.user.result.memo}}
+			{{?}}
+			</textarea>
+			<input type="hidden" name="userid" id="userid" value="{{=it.user.result.id}}"/>
+			<input type="hidden" name="pwd" id="pwd" value="{{=it.user.result.password}}"/>
+
+			{{?}}
+			<input id="idCloseAccountInfo" class="button secondary right" type="button" value="닫기" style="margin-left:5px;" onclick="document.getElementById(&#39;idDivAccountInfo&#39;).style.display = &#39;none&#39;;">
+			<input id="idCloseAccountInfo" class="button secondary right" type="button" value="저장" onclick="modify()">
+
+		</form>
+</div>

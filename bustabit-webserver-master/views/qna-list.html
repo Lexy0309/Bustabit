@@ -1,0 +1,69 @@
+{{##def.page_title = '1:1문의' #}}
+
+{{##def.content:
+<script>
+$( document ).ready(function() {
+	var total = 1;
+	total = Number($('#total').val());
+	page = Number($('#page').val());
+	if(total) {
+		GetPageValue(total, page, 'qna-list');
+	}	
+});
+</script>
+<div class="content row panel radius">
+
+    <h5>1:1문의</h5>
+    <hr>
+	<input type="hidden" name="page" id="page" value ="{{=it.user.page}}"/>
+    <table class="leaders">
+        <thead>
+            <tr>
+                <td style="width:10%;">No</td>
+				<td style="width:50%;">제목</td>
+				<td style="width:10%;">답변</td>
+				<td style="width:10%;">확인</td>
+				<td style="width:20%;">날짜</td>
+            </tr>
+        </thead>
+        <tbody>
+            {{~it.user.leaders :leader:index}}
+                <tr>
+                    <td style="width:10%">
+                        {{=index+1}}
+                    </td>
+                    <td style="width:50%; text-align:left;">
+                        <a href="/qna-read?idx={{=leader.no}}&rno={{=leader.rno}}">{{=leader.subject}}</a>
+                    </td>
+                    <td style="width:10%">
+						{{?leader.reply_datetime == null}}
+							처리중
+						{{??}}
+							완료
+						{{?}}
+                    </td>
+					<td style="width:10%">
+						{{?leader.confirm_datetime == null}}
+							미확인
+						{{??}}
+							확인
+						{{?}}
+					</td>
+					<td style="width:20%">
+                        {{=leader.datetime}}
+                    </td>
+					<input type="hidden" name="total" id="total" value ="{{=leader.total_count}}"/>
+                </tr>
+            {{~}}
+
+        </tbody>
+    </table>
+	<input id="idOpenWrite" class="button secondary right" type="button" value="글쓰기" onclick="if (7 == &#39;0&#39;) { alert(&#39;승인대기중 상태에서는 1:1문의를 사용할 수 없습니다.&#39;); return; } if (Number(&#39;0&#39;) &gt;= 1) { alert(&#39;현재 답변 대기중인 문의사항이 있습니다.&#39;); return; } location.href = &#39;/qna-write&#39;">
+</div>
+<style>
+	.pageButton { float: left; padding: 0px 10px; } .selectPageColor { color: #0078a0; }
+</style>
+<div id="idDivPage" style="width: 100%; height: 30px; text-align: center;"></div>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

@@ -1,0 +1,39 @@
+<script src="/css/jquery-1.10.1.min.js"></script>
+<script src="/css/jquery-ui.js"></script>
+<script src="/css/pagination.js"></script>
+<table class="leaders">
+	<thead>
+		<tr>
+			<td style="width:10%;">번호</td>
+			<td style="width:15%;">유저명</td>
+			<td style="width:15%;">가입코드</td>
+			<td style="width:20%;">총입금액(원)</td>
+			<td style="width:20%;">총출금액(원)</td>
+			<td style="width:20%;">게임머니(원)</td>
+		</tr>
+	</thead>
+	{{?it.user.results.length > 0}}
+	<tbody>
+		{{~it.user.results : result:index}}
+		<tr>
+			<td style="width:10%;">{{=index+1}}</td>
+			<td style="width:15%; text-align:center;">
+				{{=result.username}}
+			</td>
+			<td style="width:15%; text-align:center;">
+				{{=result.solecodeinput}}
+			</td>
+			<td style="width:20%; text-align:right;">
+				{{=result.inputmoney}}
+			</td>
+			<td style="width:20%; text-align:right;">
+				{{=result.outputmoney}}
+			</td>
+			<td style="width:20%; text-align:right;">
+				{{=result.balance_satoshis}}
+			</td>
+		</tr>
+		{{~}}
+	</tbody>
+	{{?}}	
+</table>

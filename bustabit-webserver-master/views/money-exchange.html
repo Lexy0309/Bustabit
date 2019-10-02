@@ -1,0 +1,217 @@
+{{##def.page_title = '금액 환전 요청' #}}
+
+{{##def.content:
+<script>
+	$( document ).ready(function() {
+		var total = 1;
+		total = Number($('#total').val());
+		var page = 1;
+		page = Number($('#page').val());
+		var str = document.getElementById('str1').value;
+		if(str=='notenough')
+			alert('롤링금액이 충족되지 않았습니다.롤링충족후 환전 신청 바랍니다.');
+		if(str=='nottime')
+			alert('환전규정을 충족 바랍니다.');
+		if(str=='notcondition')
+			alert('이미 환전요청중인게 있습니다.');
+		if(total) {
+			GetPageValue(total, page, 'money-exchange');
+		}
+	});
+	setInterval(findState, 30000);
+	function findState(){
+		page = Number($('#page').val());
+		$.ajax({
+			url: "./money-exchange-list",
+			type: "POST",
+			data: {page : page},
+			success: function(data) {
+				$("#result").html(data);
+			}
+		});
+	}
+	 function AddMoney(addMoney) { 
+		 var currentMoney = Number(document.getElementById('idTxtMoney').value.replace(/,/g, '')); 
+		 currentMoney += Number(addMoney); 
+		 document.getElementById('idTxtMoney').value = currentMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"); 
+	} 
+	function InitMoney() { document.getElementById('idTxtMoney').value = '0'; }
+	function isNumberKey(evt) { 
+		document.getElementById('idTxtMoney').addEventListener("input", function () {
+			var money = document.getElementById('idTxtMoney').value.replace(/,/g, ''); 
+			money = money.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"); 
+			document.getElementById('idTxtMoney').value = money; 
+		});
+		var charCode = (evt.which) ? evt.which : event.keyCode; 
+		if (charCode > 31 && (charCode < 48 || charCode > 57)) return false; 
+		return true; 
+	};
+    function checkRegisterInfo() {
+       var requestMoney = Number(document.getElementById('idTxtMoney').value.replace(/,/g, ''));
+	  
+	   var balance = Number(document.getElementById('balance').value)/100;
+	   if(requestMoney <10000) {
+		   alert('만원이상부터 신청가능합니다.'); return false;
+	   } 
+	   if(requestMoney%10000 != 0) {
+			 alert('만원단위로만 신청가능합니다.'); return false;
+		}
+	    if(requestMoney > balance) {
+			alert('보유머니가 부족합니다.'); return false;
+		}
+		return true;
+    }
+	function RequestExchange(userID) { 
+		var requestMoney = Number(document.getElementById('idTxtMoney').value.replace(/,/g, ''));
+		var balance = Number(document.getElementById('balance').value)/100;
+		if(requestMoney <10000) {alert('만원이상부터 신청가능합니다.'); return;}
+		if(requestMoney%10000 != 0) {alert('만원단위로만 신청가능합니다.'); return;}
+		if(requestMoney > balance) {alert('보유머니가 부족합니다.'); return;}
+		if (!confirm(requestMoney + "원 환전 요청을 하시겠습니까?")) return;
+		var state = document.getElementById('state').value;
+		if(state=='yes') {alert('이미 환전요청중인 게있습니다.'); return;}
+		var bank = document.getElementById('idBank').value;
+		var owner = document.getElementById('idOwner').value;
+		var accountnum = document.getElementById('idAccount').value;
+		$.ajax({
+			url: "./request-money-exchange",
+			type: "POST",
+			data: {money : requestMoney,
+				   bank  : bank,
+				   owner : owner,
+				   accountnum: accountnum},
+			success: function(data) {
+				location.href = '/money-exchange';
+			}
+		});
+	};
+	function DeleteHistory(deleteIndex) {
+		if (!confirm("정말로 삭제하시겠습니까?")) return;
+		 $.ajax({
+			url: "./delete-exchange-history",
+			type: "POST",
+			data: {dataIndex : deleteIndex},
+			success: function(data) {
+				location.href = '/money-exchange';
+			}
+		});
+
+	}
+	
+</script>
+<div class="content row panel radius">
+	<form action="/request-money-exchange" method="post">
+	<div style="border-bottom:1px solid #DDDDDD; margin-bottom:20px;">
+		<div class="tabButton" onclick="location.href = &#39;/money-charge&#39;">충전</div>
+		<div class="tabButtonSelect" onclick="location.href = &#39;/money-exchange&#39;">환전</div>
+		<div style="clear:both;"></div>
+	</div>
+	<input type="hidden" name="page" id="page" value ="{{?it.user.page}}{{=it.user.page}}{{??}}1{{?}}"/>
+	<input type="hidden" name="balance" id="balance" value ="{{=it.user.balance_satoshis}}"/>
+	<input type="hidden" name="str1" id="str1" value ="{{?it.user.str}}{{=it.user.str}}{{?}}"/>
+	<!-- <h5>금액 충전</h5> <hr> -->
+	<label for="idLabNotice">주의사항</label>
+	<div style="border: 1px solid #DDDDDD; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); padding: 5px;">
+		<label for="idLabAccount">
+			<p><span style="font-size: 14px">☆ 환전은 </span><span style="color: #ff0000; font-size: 14px"><b><span style="font-size: 14px">가입 시 등록한 계좌</span>
+				</b>
+				</span><span style="font-size: 14px">로 24시간 자유롭게 출금이 가능합니다.</span>
+			</p>
+			<p><span style="font-size: 14px">&nbsp;</span>
+			</p>
+			<p><span style="font-size: 14px">☆&nbsp;</span><span style="font-size: 14px">환전처리는 보통<span style="color: #ff0000"><b>&nbsp;30</b></span>분
+				이내 처리되며 은행 점검시간 전/후 에는 처리가 지연될 수 있습니다.</span>
+			</p>
+			<p><span style="font-size: 14px">&nbsp;</span>
+			</p>
+			<p><span style="font-size: 14px">☆ <b><span style="color: #ff0000">30</span>
+				</b>
+				</span><span style="font-size: 14px"><span style="color: #ff0000"><b><span style="font-size: 14px">분이상 환전이 지연</span>
+				</b>
+				</span>될 경우에는&nbsp;<span style="color: #0000ff"><b><span style="font-size: 14px">1:1 문의</span>
+				</b>
+				</span>바랍니다.</span>
+			</p>
+			<p><span style="font-size: 14px">&nbsp;</span>
+			</p>
+			<p><span style="font-size: 14px">※ 환전신청은 1일5회 / 3시간에 한번씩 환전 가능합니다 [1회 최대 환전금액 300만원] [1일최대 1500만원]</span>
+			</p>
+			<p><span style="font-size: 14px">&nbsp;</span>
+			</p>
+			<p><span style="font-size: 14px">※ 환전신청은 1만원 단위로만 가능합니다.</span>
+			</p>
+		</label>
+	</div>
+	<div style="margin-top:20px;"></div>
+	<label for="idLabAccount">계좌정보</label>
+	
+		<input type="text" id="idBank" name="idBank" style="float: left; width: 60%; margin-bottom:10px;" value="{{=it.user.account.bankindex}}" readonly="">
+		<input type="text" id="idOwner" name="idOwner" style="float: left; width: calc(40% - 10px); margin-left: 10px; margin-bottom: 10px;" value="{{=it.user.account.deposit_name}}" readonly="">
+		<div style="clear:both;"></div>
+		<input type="text" id="idAccount" name="idAccount" value="{{=it.user.account.accountnum}}" readonly="">
+		<div style="margin-top:20px;"></div>
+		<label for="idLabMoney">환전 금액</label>
+		<div style="float: left; width: calc(85% - 5px);">
+			<input id="idTxtMoney" name="idTxtMoney" style="margin-bottom:6px;" type="text" value="0" maxlength="11" onkeypress="return isNumberKey(event)" required/>
+			<input type="button" class="button secondary left moneyFontSize" style="width:calc((100% - 26px) / 6); height:37px; padding:0px; white-space: normal; margin-right:5px;" value="1만원" onclick="AddMoney(10000);">
+			<input type="button" class="button secondary left moneyFontSize" style="width:calc((100% - 26px) / 6); height:37px; padding:0px; white-space: normal; margin-right:5px;" value="5만원" onclick="AddMoney(50000);">
+			<input type="button" class="button secondary left moneyFontSize" style="width:calc((100% - 26px) / 6); height:37px; padding:0px; white-space: normal; margin-right:5px;" value="10만원" onclick="AddMoney(100000);">
+			<input type="button" class="button secondary left moneyFontSize" style="width:calc((100% - 26px) / 6); height:37px; padding:0px; white-space: normal; margin-right:5px;" value="50만원" onclick="AddMoney(500000);">
+			<input type="button" class="button secondary left moneyFontSize" style="width:calc((100% - 26px) / 6); height:37px; padding:0px; white-space: normal; margin-right:5px;" value="100만원" onclick="AddMoney(1000000);">
+			<input type="button" class="button secondary left moneyFontSize" style="width:calc((100% - 26px) / 6); height:37px; padding:0px; white-space: normal;" value="초기화" onclick="InitMoney();">
+		</div>
+		<!--<input id="idChargeMoney" class="light-button right" style="float: left; width: 15%; height: 80px; padding: 3px; white-space: normal;" type="submit" value="환전 요청" onclick="RequestExchange(&#39;{{=it.user.id}}&#39;);">-->
+		<input id="idChargeMoney" class="light-button right" style="float: left; width: 15%; height: 80px; padding: 3px; white-space: normal;" type="submit" value="환전 요청" onclick="if (!checkRegisterInfo()) return false;" >
+	
+	<div style="clear:both;"></div>
+	<div style="margin-top:50px;"></div>
+	 <h5>환전 내역</h5>
+	 <hr>
+	 <div id="result">
+		 <table class="leaders">
+				<thead>
+					<tr>
+						<td style="width:20%;">구분</td>
+						<td style="width:20%;">금액</td>
+						<td style="width:20%;">상태</td>
+						<td style="width:20%;">날짜</td>
+						<td style="width:20%;">삭제</td>
+					</tr>
+				</thead>
+				{{?it.user.moneys.length > 0}}
+				<tbody>
+					{{~it.user.moneys : money:index}}
+					<tr>
+						<td style="width:20%;">환전</td>
+						<td style="width:20%; text-align:left;">-{{=money.balance}}</td>
+						{{?money.pay_state == '보류'}}
+							<td style="width:20%;">요청</td>
+						{{??}}
+							<td style="width:20%;">{{=money.pay_state}}</td>
+						{{?}}
+						<td style="width:20%;">{{=money.datetime}}</td>
+						{{?money.pay_state == '승인' || money.pay_state == '거부'}}
+							<td style="width:20%;">
+								<input type="button" class="button" style="padding:2px; white-space:normal; background-color:#EB2946;" value="삭제" onclick="DeleteHistory(&#39;{{=money.id}}&#39;)">
+							</td>
+						{{??}}
+							<td style="width:20%;"></td>
+						{{?}}
+						<input type="hidden" name="total" id="total" value ="{{=money.total_count}}"/>
+					</tr>
+					{{~}}
+				</tbody>
+				{{?}}
+			</table>
+		</div>
+	
+	<!-- 페이지 컨트롤 -->
+	<style>
+		.pageButton { float: left; padding: 0px 10px; } .selectPageColor { color: #0078a0; }
+	</style>
+	<div id="idDivPage" style="width: 100%; height: 30px; text-align: center;"></div>
+</form>
+</div>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}

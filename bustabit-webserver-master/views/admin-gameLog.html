@@ -1,0 +1,151 @@
+
+{{##def.page_title = '게임로그' #}}
+
+{{##def.content:
+
+<div class="content row panel radius">
+<input type="hidden" name="page" id="page" value ="{{=it.user.page}}"/>
+<input type="hidden" name="s_game_created" id="s_game_created" value ="{{=it.user.s_game_created}}"/>
+<input type="hidden" name="s_game_no" id="s_game_no" value ="{{=it.user.s_game_no}}"/>
+<input type="hidden" name="s_user_id" id="s_user_id" value ="{{=it.user.s_user_id}}"/>
+<form class="condition">
+	<div style="float: left; width: calc(100% - 1px);">
+		<label for="idLabNotice" style="padding:0px;display:inline;">날짜</label>
+		<input id="game_created" name="game_created" class="invalid" style="width:calc((100% - 26px) /6); height:37px; display:inline; padding:0px; white-space: normal; margin-right:5px;" type="text" value="{{=it.user.s_game_created}}">
+		<label for="idLabNotice" style="padding:0px;display:inline;">회차</label>
+		<input id="game_no" name="game_no" style="width:calc((100% - 26px) /6); height:37px; display:inline; padding:0px; white-space: normal; margin-right:5px;" type="text" value="{{=it.user.s_game_no}}">
+		<input id="idOpenList" class="button secondary" type="button" value="검색" onclick="Search(1);">				
+	</div>
+</form>
+<table class="leaders">
+	<thead>
+		<tr>
+			<td style="width:10%;">회차</td>
+			<td style="width:10%;">결과</td>
+			<td style="width:10%;">수익률</td>
+			<td style="width:20%;">배팅금</td>
+			<td style="width:20%;">보너스</td>
+			<td style="width:10%;">수익</td>
+			<td style="width:10%;">수익률수정</td>
+			<td style="width:10%;">배팅금수정</td>
+		</tr>
+	</thead>
+	{{?it.user.results.length > 0}}
+	<tbody>
+		{{~it.user.results : result:index}}
+		<tr>
+			<td style="width:10%;font-style:italic;"><span>{{=result.created }}</span><br><span>{{=result.game_no }}</span></td>
+			<td style="width:10%;font-style:italic;">{{=result.game_crash}}x</td>
+			<td style="width:10%;">
+				<input id="stopped_{{=result.game_id}}" name = "stopped_at" style="height:37px; padding:2px;font-style:italic;" type = "text" value = "{{=result.stopped_at}}">
+			</td>
+			<td style="width:20%;font-style:italic;">
+				<input id="bet_{{=result.game_id}}" name = "bet" style="height:37px; padding:2px;font-style:italic;" type="text" onkeypress="return isNumberKey2(event, {{=result.game_id}})" value = "{{=result.bet}}">
+			</td>
+			<td style="width:20%;font-style:italic;">{{=result.bonus}}</td>
+			<td style="width:10%;font-style:italic;">{{=result.profit}}</td>
+			<td style="width:10%;">
+				<input type="submit" class="button" style="padding:1px;" value="수익률수정" onclick="modifyStopppedAt(&#39;{{=result.game_id}}&#39;)">
+			</td>
+			<td style="width:10%;">
+				<input type="submit" class="button" style="padding:1px;" value="배팅금수정" onclick="modifyBetSize(&#39;{{=result.game_id}}&#39;)">
+			</td>
+			<input type="hidden" name="total" id="total" value ="{{=result.total_count}}"/>
+			<input type="hidden" name="userid" id="userid" value ="{{=result.user_id}}"/>
+		</tr>
+		{{~}}
+	</tbody>
+	{{?}}
+</table>
+
+	<!-- 페이지 컨트롤 -->
+<style>
+	.pageButton { float: left; padding: 0px 10px; } .selectPageColor { color: #0078a0; font-style:italic;}
+</style>
+<input id="idOpenList" class="button secondary left" type="button" value="목록" onclick="location.href = &#39;/admin-virUser&#39;">
+<div id="idDivPage" style="width: 100%; height: 30px; text-align: center;"></div>
+</div>
+
+<script type="text/javascript">
+/**
+ * Added by jjb 2017.10.21.
+ */
+function Search(page) { 
+	var game_created = $('#game_created').val();
+	var game_no = $('#game_no').val();
+	var user_id = Number($('#s_user_id').val());
+	location.href = '/admin-gameLog?id='+user_id+'&game_created=' + game_created + '&game_no=' + game_no; 
+}
+function isNumberKey2(evt, uid) { 
+	var id = 'bet_' + uid;	
+	document.getElementById(id).addEventListener("input", function () {
+		var money = document.getElementById(id).value.replace(/,/g, '');
+		money = money.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"); 
+		document.getElementById(id).value = money; 
+	});
+	var charCode = (evt.which) ? evt.which : event.keyCode; 
+	if (charCode > 31 && (charCode < 48 || charCode > 57)) return false; 
+	return true; 
+};
+function modifyStopppedAt(uId){
+	var userid = Number($('#userid').val());
+	var id =  'stopped_' + uId;
+	var currentMoney = Number(document.getElementById(id).value.replace(/x/g, ''));
+	if(document.getElementById(id).value == '-') currentMoney = 0;
+	id =  'bet_' + uId;
+	var currentBet = Number(document.getElementById(id).value.replace(/,/g, ''));
+	page = Number($('#page').val());
+	
+	$.ajax({
+		url: "./update_stopped",
+		type: "POST",
+		data: {game_id: uId,
+			   user_id: userid,
+			   balance: currentMoney,
+			   bet:		currentBet},
+		success: function(data) {
+			alert('수정되었습니다.');
+			location.href = '/admin-gameLog?id='+userid+'&page='+page;
+		}
+    });
+}
+function modifyBetSize(uId){
+	var userid = Number($('#userid').val());
+	var id =  'bet_' + uId;
+	var currentMoney = Number(document.getElementById(id).value.replace(/,/g, ''));
+	id =  'stopped_' + uId;
+	
+	var currentAt = Number(document.getElementById(id).value.replace(/x/g, ''));
+	if(document.getElementById(id).value == '-') currentAt = 0;
+	page = Number($('#page').val());
+	
+	$.ajax({
+		url: "./update_bettingsize",
+		type: "POST",
+		data: {game_id: uId,
+			   user_id: userid,
+			   balance: currentMoney,
+			   at: currentAt},
+		success: function(data) {
+			alert('수정되었습니다.');
+			location.href = '/admin-gameLog?id='+userid+'&page='+page;
+		}
+    });
+}
+				  
+$('#game_created').datepicker();
+var total = 1;
+total = Number($('#total').val());
+page = Number($('#page').val());
+user_id = Number($('#s_user_id').val());
+console.log(total);
+console.log(page);
+var game_created = $('#s_game_created').val();
+var game_no = $('#s_game_no').val();
+if(total) {
+	GetPageValue(total, page, 'admin-gameLog?id='+user_id+'&game_created='+game_created+'&game_no='+game_no, 'gameLog');
+}
+</script>
+#}}
+<!--modify by lt-->
+{{#def.include('./template/main_new')}}
