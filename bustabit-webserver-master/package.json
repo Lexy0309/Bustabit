@@ -64,7 +64,7 @@
     "gulp-watch": "^4.3.11",
     "merge-stream": "^0.1.7",
     "mousetrap": "^1.5.2",
-    "react": "^0.13.3",
+    "react": "^16.13.1",
     "run-sequence": "^1.1.0",
     "screenfull": "^2.0.0",
     "seedrandom": "^2.4.0",
